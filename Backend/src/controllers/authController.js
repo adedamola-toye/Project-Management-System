@@ -3,31 +3,43 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const nodemailer = require('nodemailer');  // Make sure to require nodemailer
 
+const nodemailer = require('nodemailer'); // Ensure nodemailer is required
+
 async function sendVerificationEmail(user) {
-    // Generate a token for email verification
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
-    const verificationUrl = `http://localhost:3000/auth/verify-email?token=${token}`; //Replace with actual production domain
+    try {
+        // Generate a token for email verification
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,  // Your email address
-            pass: process.env.EMAIL_PASS,  // Your email password
-        },
-    });
+        // Construct the verification URL
+        const verificationUrl = `http://localhost:3000/auth/verify-email?token=${token}`; // Make sure this points to your actual production domain
 
-    const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: user.email,
-        subject: 'Please verify your email address',
-        text: `Click the following link to verify your email: ${verificationUrl}`,
-    };
+        // Set up the transporter to send the email via Gmail (or another service if you wish)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail', // You can replace this with another service like SendGrid, SES, etc.
+            auth: {
+                user: process.env.EMAIL_USER,  // Your email address (Gmail address)
+                pass: process.env.EMAIL_PASS,  // Your email password or app-specific password
+            },
+        });
 
-    // Send the email
-    await transporter.sendMail(mailOptions);
+        // Email options
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: user.email,
+            subject: 'Please verify your email address',
+            text: `Click the following link to verify your email: ${verificationUrl}`,
+        };
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw new Error('Could not send verification email. Please try again later.');
+    }
 }
 
-exports.signup = async (req, res) => {
+
+module.exports.signup = async (req, res) => {
     const { username, password, email } = req.body;
 
     if (!username || !password || !email) {
@@ -62,7 +74,7 @@ exports.signup = async (req, res) => {
     }
 };
 
-exports.verifyEmail = async (req, res) => {
+module.exports.verifyEmail = async (req, res) => {
     const { token } = req.query;
 
     if (!token) {
@@ -98,7 +110,7 @@ exports.verifyEmail = async (req, res) => {
     }
 };
 
-exports.resendVerificationEmail = async (req, res) => {
+module.exports.resendVerificationEmail = async (req, res) => {
     const { email } = req.body;
 
     if (!email) {
@@ -127,7 +139,7 @@ exports.resendVerificationEmail = async (req, res) => {
 
 
 
-exports.login = async (req, res) => {
+module.exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -173,5 +185,37 @@ exports.login = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server error' });
+    }
+};
+
+
+
+module.exports.refreshToken = async (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return res.status(400).json({ error: 'Refresh token is required' });
+    }
+
+    try {
+        // Verify the refresh token
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET_KEY);
+        const user = await pool.query('SELECT * FROM users WHERE id=$1', [decoded.userId]);
+
+        if (!user.rows.length) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+
+        // Generate a new access token
+        const newAccessToken = jwt.sign(
+            { userId: user.rows[0].id, username: user.rows[0].username },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+
+        res.json({ accessToken: newAccessToken });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: 'Invalid or expired refresh token.' });
     }
 };
