@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const nodemailer = require('nodemailer');  // Make sure to require nodemailer
 
-const nodemailer = require('nodemailer'); // Ensure nodemailer is required
 
 async function sendVerificationEmail(user) {
     try {
