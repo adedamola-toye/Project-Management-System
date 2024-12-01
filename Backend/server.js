@@ -34,7 +34,7 @@ app.use(cors());
 
 //Set up a route that listens for GET requests from the root URL(/). So when we visit this route the server will respond by sending the message.
 //app.METHOD(PATH, HANDLER)
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   res.send("Express server is running");
 });
 
@@ -47,11 +47,11 @@ const tasksRoutes = require('./src/routes/tasksRoutes')
 const projectsRoutes = require('./src/routes/projectsRoutes')
 const authRoutes = require('./src/routes/authRoutes')
 const projectRoleRoutes = require('./src/routes/projectRoleRoutes')
-app.use('/users', usersRoutes)
-app.use('/tasks', tasksRoutes)
-app.use('/projects', projectsRoutes)
-app.use('/auth', authRoutes)
-app.use('/projects', projectRoleRoutes)
+app.use('/api/users', usersRoutes)
+app.use('/api/tasks', tasksRoutes)
+app.use('/api/projects', projectsRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/projects', projectRoleRoutes)
 
 //Start the server and tell it to listen for requests on the PORT defined. When server is running, it will run the function
 app.listen(PORT, () => {

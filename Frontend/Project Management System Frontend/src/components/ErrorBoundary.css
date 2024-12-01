@@ -1,0 +1,23 @@
+
+.error-boundary-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+    color: #333; 
+  }
+  
+  .error-boundary-content {
+    text-align: center;
+  }
+  
+  .error-boundary-title {
+    font-size: 50px;
+    font-weight: bold;
+  }
+  
+  .error-boundary-message {
+    line-height: 1.6;
+  }
+  

@@ -1,0 +1,81 @@
+
+  
+  /* Header Section */
+  .header {
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+  
+  .header h1 {
+    font-size: 3rem;
+    color: #5a189a;
+    margin-bottom: 0.5rem;
+  }
+  
+  .header p {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+  
+  /* Features Section */
+  .features {
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 800px;
+    margin: -2rem auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .features p {
+    font-size: 1.2rem;
+    color: #333;
+    line-height: 1.8;
+  }
+  
+  /* Call-to-Action Section */
+  .cta {
+    text-align: center;
+    padding: 3rem 2rem;
+    margin-top: 2rem;
+  }
+  
+  .cta p {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .cta button {
+    font-size: 1.2rem;
+    padding: 1rem 2rem;
+    background-color: #5a189a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .cta button:hover {
+    background-color: #deaaff;
+    transform: scale(1.05);
+    color: #5a189a;
+  }
+  
+  /* Footer Section */
+  .landing-footer {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 1rem 0;
+    background-color: #5a189a;
+    color: #fff;
+  }
+  
+  .landing-footer p {
+    font-size: 1rem;
+  }
+  
