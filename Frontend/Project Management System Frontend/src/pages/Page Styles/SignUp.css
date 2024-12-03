@@ -81,3 +81,9 @@ h3 {
   background-color: #6c757d;
   cursor: not-allowed;
 }
+
+.error-message{
+  text-align: center;
+  padding-bottom: 1rem;
+  color: red;
+}

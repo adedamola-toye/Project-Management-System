@@ -5,9 +5,11 @@ import { RootState, AppDispatch } from "../../store/store";
 import { createUser } from "../../store/user/userSlice";
 import "../Page Styles/SignUp.css";
 import { FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { openModal } from "../../store/modal/modalSlice";
 
 const SignUpModal = () => {
-  const dispatch = useDispatch<AppDispatch>();  // Properly type dispatch
+  const dispatch = useDispatch<AppDispatch>();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -17,14 +19,9 @@ const SignUpModal = () => {
     confirmPassword: "",
   });
 
-  // Loading state for handling the button text
-  const [loading, setLoading] = useState(false);
-
-  // Access the modal state from Redux
-  const { isOpen, modalType } = useSelector(
-    (state: RootState) => state.modal
-  );
-  const { error } = useSelector((state: RootState) => state.user);
+  // Access Redux state
+  const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
+  const { loading, error } = useSelector((state: RootState) => state.user);
 
   // Only render the modal if it is open and the modal type is 'signup'
   if (!isOpen || modalType !== "signup") return null;
@@ -38,37 +35,42 @@ const SignUpModal = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // Start loading state
-  
-    try {
-      const resultAction = await dispatch(
-        createUser({
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-        })
-      );
-      if (createUser.fulfilled.match(resultAction)) {
-        setLoading(false); // End loading state
-        dispatch(closeModal()); // Close modal after successful sign-up
-      } else {
-        // Handle case where createUser did not succeed
-        setLoading(false);
-        console.error("Signup failed:", resultAction.payload); // Log the error
-      }
-    } catch (error) {
-      setLoading(false); // End loading state
-      console.error("Signup failed:", error); // Log the error
+
+    // Password confirmation validation
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
     }
+
+    //exclude confirmPassword
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const {confirmPassword, ...userData} = formData
+
+    // Dispatch the createUser thunk
+    dispatch(createUser(userData))
+      .unwrap()
+      .then(() => {
+        alert("Account successfully created!");
+        dispatch(closeModal()); // Close modal on successful account creation
+      })
+      .catch((error) => {
+        console.error("Error creating user:", error);
+        
+      });
   };
-  
 
   // Close the modal
   const handleCloseModal = () => {
     dispatch(closeModal());
   };
+
+  //Switch to login modal
+  const switchToLoginModal = () => {
+    dispatch(closeModal());
+    dispatch(openModal('login'))
+  }
 
   return (
     <div className="modal-overlay">
@@ -77,7 +79,6 @@ const SignUpModal = () => {
           <FaTimes size={30} color="#5a189a" />
         </button>
         <h3>Sign Up To Join ProFlow</h3>
-        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label htmlFor="email">Email</label>
@@ -127,10 +128,13 @@ const SignUpModal = () => {
               disabled={loading}
             />
           </div>
+          {error && <div className="error-message">{error}</div>}
           <button type="submit" className="submit-btn" disabled={loading}>
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
+        <p>Already have an account with us? {" "} 
+          <Link to="#" onClick={switchToLoginModal}>Log in</Link></p>
       </div>
     </div>
   );

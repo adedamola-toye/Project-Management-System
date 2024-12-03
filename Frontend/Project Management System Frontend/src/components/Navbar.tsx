@@ -1,11 +1,15 @@
 import { useState } from "react";
 import "./Navbar.css";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { openModal } from "../store/modal/modalSlice";
 
 
 const Navbar: React.FC = () => {
   //const isAuthenticated = true; // Replace with actual authentication logic
 //  const userName = "John Doe"; // Replace with actual user data
+    
+    const dispatch = useDispatch();
     const [navbarOpen, setNavbarOpen] = useState(false);
     const toggleMenu = () => {
         setNavbarOpen(!navbarOpen)
@@ -13,6 +17,11 @@ const Navbar: React.FC = () => {
 
     const closeMenu = () => {
         setNavbarOpen(false);
+    }
+
+    const openSignUpModal = () => {
+      dispatch(openModal('signup'));
+      closeMenu();
     }
 
   return (
@@ -30,7 +39,7 @@ const Navbar: React.FC = () => {
       </div>
       <ul className={`nav-links ${navbarOpen? "open":""}`}>
         <li onClick={closeMenu}>Home</li>
-        <li onClick={closeMenu}>Sign Up</li>
+        <li onClick={openSignUpModal}>Sign Up</li>
         <li onClick={closeMenu}>Log in</li>
       </ul>
       

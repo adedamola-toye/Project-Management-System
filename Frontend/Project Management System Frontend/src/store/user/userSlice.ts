@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+//import { AxiosError } from "axios";
 
 // User Interface
 interface User {
@@ -33,11 +34,25 @@ const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/
 // Create user async action
 export const createUser = createAsyncThunk<User, Omit<User, "id">>(
   "user/createUser",
-  async (userData) => {
-    const response = await axios.post<User>(`${API_URL}/api/users`, userData);
-    return response.data;
+  async (userData, { rejectWithValue }) => {
+    try {
+      console.log("Creating user with data:", userData)
+      const response = await axios.post<User>(`${API_URL}/api/users`, userData);
+      console.log("User created successfully:", response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error:", error.response?.data || error.message);
+        return rejectWithValue(error.response?.data || "Something went wrong");
+      } else {
+        
+        console.error("Unknown error:", error);
+        return rejectWithValue("An unexpected error occurred.");
+      }
+    }
   }
 );
+
 
 // Get all users async action
 export const getAllUsers = createAsyncThunk<User[]>(
@@ -95,8 +110,22 @@ const userSlice = createSlice({
       })
       .addCase(createUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to create user.";
+      
+        // Check if action.payload is a string
+        if (typeof action.payload === 'string') {
+          state.error = action.payload;  // Directly use the string error message
+        }
+        // If action.payload is an object, it might contain an error property
+        else if (action.payload && typeof action.payload === 'object') {
+          // Safely access the 'error' property, asserting the type of action.payload
+          state.error = (action.payload as { error: string }).error || 'An error occurred';
+        } else {
+          state.error = 'An error occurred'; // Default error message
+        }
       })
+      
+      
+      
 
       // Get All Users
       .addCase(getAllUsers.pending, (state) => {
@@ -108,7 +137,7 @@ const userSlice = createSlice({
       })
       .addCase(getAllUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch users.";
+        state.error = (action.error.message || "Failed to fetch users.") as string;
       })
 
       // Get User by ID

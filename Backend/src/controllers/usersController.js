@@ -44,8 +44,8 @@ exports.createUser = async (req, res) => {
     const password_hash = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
-      "INSERT INTO users (username, email, password_hash,created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING *",
-      [username, email, password_hash, new Date(), new Date()]
+      "INSERT INTO users (username, email, password_hash,created_at, updated_at, updated_by) VALUES ($1, $2, $3, $4) RETURNING *",
+      [username, email, password_hash, new Date(), new Date(), username]
     );
     res.json(newUser.rows[0]);
   } catch (error) {
