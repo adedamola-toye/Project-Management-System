@@ -64,17 +64,18 @@ module.exports.signup = async (req, res) => {
 
     // Insert the new user into the database
     const newUser = await pool.query(
-      "INSERT INTO users (username, email, password_hash, is_verified) VALUES ($1, $2, $3, $4) RETURNING id, username, email",
-      [username, email, hashedPassword, false] // Set 'is_verified' to false
+      "INSERT INTO users (username, email, password_hash, created_at, updated_at, updated_by, is_verified) VALUES ($1, $2, $3, $4) RETURNING id, username, email",
+      [username, email, hashedPassword,new Date(), new Date(), username, false] // Set 'is_verified' to false
     );
 
     // Send the verification email
     await sendVerificationEmail(newUser.rows[0]);
 
     res.status(201).json({
-      message:
-        "Registration successful. Please check your email to verify your account.",
-    });
+      message: "Registration successful. Please check your email to verify your account.",
+      user: newUser.rows[0]
+   });
+   
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Server error" });

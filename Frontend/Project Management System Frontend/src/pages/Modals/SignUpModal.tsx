@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../../store/modal/modalSlice";
 import { RootState, AppDispatch } from "../../store/store";
-import { createUser } from "../../store/user/userSlice";
 import "../Page Styles/SignUp.css";
 import { FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { openModal } from "../../store/modal/modalSlice";
+import { signupUser } from "../../store/auth/authSlice";
 
 const SignUpModal = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,10 +49,10 @@ const SignUpModal = () => {
     const {confirmPassword, ...userData} = formData
 
     // Dispatch the createUser thunk
-    dispatch(createUser(userData))
+    dispatch(signupUser(userData))
       .unwrap()
       .then(() => {
-        alert("Account successfully created!");
+        alert("Account successfully created! Please check your email for verification");
         dispatch(closeModal()); // Close modal on successful account creation
       })
       .catch((error) => {
