@@ -133,7 +133,7 @@ const SignUpModal = () => {
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
-        <p>Already have an account with us? {" "} 
+        <p className="login-cta">Already have an account with us? {" "} 
           <Link to="#" onClick={switchToLoginModal}>Log in</Link></p>
       </div>
     </div>
