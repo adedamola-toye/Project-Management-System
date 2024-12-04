@@ -4,7 +4,7 @@ import axios from 'axios';
 
 
 // Define API URL
-const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/auth";
+const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000";
 
 console.log(API_URL)
 
