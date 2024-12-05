@@ -7,6 +7,7 @@ interface Project {
   title: string;
   description: string;
   created_by: string;
+  created_at?:string;
   updated_by?: string;
   updated_at?: string;
 }
@@ -30,11 +31,18 @@ const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/
 
 
 // Create project async action
-export const createProject = createAsyncThunk<Project, Omit<Project, "id">>(
-  "project/createProject",
-  async (projectData) => {
-    const response = await axios.post<Project>(API_URL, projectData);
-    return response.data;
+export const createProject = createAsyncThunk(
+  'project/createProject',
+  async (project: Omit<Project, 'id'>, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/projects`, project);
+      return response.data; // Assuming API returns created project with an id
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(error.response?.data || 'Project creation failed');
+      }
+      return rejectWithValue('Project creation failed');
+    }
   }
 );
 

@@ -36,7 +36,9 @@ exports.protect = async (req, res, next) => {
     // 4. Attach user information to request object
     req.user = {
       ...decoded,
-      ...currentUser.rows[0]
+      ...currentUser.rows[0],
+      username: currentUser.rows[0].username, 
+      email: currentUser.rows[0].email,
     };
 
     next();

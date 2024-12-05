@@ -11,19 +11,24 @@ interface User {
   role?: string;
 }
 
-// UserState Interface
 interface UserState {
   users: User[];
   loading: boolean;
   error: string | null;
+  username: string | null;
+  email: string | null;
+  token: string | null;
 }
 
-// Initial State
 const initialState: UserState = {
   users: [],
   loading: false,
   error: null,
+  username: null,
+  email: null,
+  token: null,
 };
+
 
 // Define API URL
 const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users";

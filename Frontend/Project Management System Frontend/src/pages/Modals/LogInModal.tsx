@@ -1,25 +1,29 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { closeModal } from "../../store/modal/modalSlice";
+import { closeModal, openModal } from "../../store/modal/modalSlice";
 import { RootState, AppDispatch } from "../../store/store";
-import { loginUser } from "../../store/auth/authSlice";  // Adjusted for login
-import "../Page Styles/SignUp.css";
+import { loginUser } from "../../store/auth/authSlice";
 import { FaTimes } from "react-icons/fa";
+import "../Page Styles/Modals.css";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { openModal } from "../../store/modal/modalSlice";
 
 const LoginModal = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   // Form state
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
 
   // Access Redux state
   const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
-  const { loading, error } = useSelector((state: RootState) => state.auth); // Adjusted to auth
+  const { loading, error } = useSelector((state: RootState) => ({
+    loading: state.auth.loading.login,
+    error: state.auth.error.login,
+  }));
 
   // Only render the modal if it is open and the modal type is 'login'
   if (!isOpen || modalType !== "login") return null;
@@ -33,19 +37,18 @@ const LoginModal = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Dispatch the loginUser thunk
-    dispatch(loginUser(formData))
-      .unwrap()
-      .then(() => {
-        alert("Login successful!");
-        dispatch(closeModal()); // Close modal on successful login
-      })
-      .catch((error) => {
-        console.error("Error logging in:", error);
-      });
+    try {
+      // Dispatch the loginUser thunk
+      await dispatch(loginUser(formData)).unwrap();
+      alert("Login successful!");
+      dispatch(closeModal());
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error logging in:", error);
+    }
   };
 
   // Close the modal
@@ -53,11 +56,11 @@ const LoginModal = () => {
     dispatch(closeModal());
   };
 
-  // Switch to sign up modal
+  // Switch to sign-up modal
   const switchToSignUpModal = () => {
     dispatch(closeModal());
-    dispatch(openModal('signup'));
-  }
+    dispatch(openModal("signup"));
+  };
 
   return (
     <div className="modal-overlay">
@@ -68,12 +71,12 @@ const LoginModal = () => {
         <h3>Log In to Your Account</h3>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleInputChange}
               required
               disabled={loading}
@@ -96,8 +99,12 @@ const LoginModal = () => {
             {loading ? "Logging In..." : "Log In"}
           </button>
         </form>
-        <p className="signup-cta">Don't have an account?{" "}
-          <Link to="#" onClick={switchToSignUpModal}>Sign up</Link></p>
+        <p className="login-cta">
+          Already have an account with us?{" "}
+          <Link  className="link"to="#" onClick={switchToSignUpModal}>
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -4,11 +4,15 @@
 const pool = require('../config/db');
 
 exports.createProject = async(req, res) => {
-    const{title, description, created_by} = req.body;
+    const{title, description} = req.body;
+    const username = req.user;
     try{
+        if(!title || !description){
+            return res.status(400).json({error: "Title and description are required"})
+        }
         const newProject = await pool.query(
-            "INSERT INTO projects (title, description, created_by, updated_at) VALUES ($1, $2, $3, $4) RETURNING *"
-            [title, description, created_by]
+            "INSERT INTO projects (title, description, created_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *"
+            [title, description, username, new Date(), new Date()]
         );
         res.json(newProject.rows[0]);
     }

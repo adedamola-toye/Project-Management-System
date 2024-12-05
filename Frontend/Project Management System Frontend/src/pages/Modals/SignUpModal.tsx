@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../../store/modal/modalSlice";
 import { RootState, AppDispatch } from "../../store/store";
-import "../Page Styles/SignUp.css";
+import "../Page Styles/Modals.css";
 import { FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { openModal } from "../../store/modal/modalSlice";
 import { signupUser } from "../../store/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const SignUpModal = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -19,9 +21,12 @@ const SignUpModal = () => {
     confirmPassword: "",
   });
 
-  // Access Redux state
+  // Access Redux state - Updated to use auth slice
   const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
-  const { loading, error } = useSelector((state: RootState) => state.user);
+  const { loading, error } = useSelector((state: RootState) => ({
+    loading: state.auth.loading.signup,
+    error: state.auth.error.signup
+  }));
 
   // Only render the modal if it is open and the modal type is 'signup'
   if (!isOpen || modalType !== "signup") return null;
@@ -35,7 +40,7 @@ const SignUpModal = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Password confirmation validation
@@ -44,21 +49,19 @@ const SignUpModal = () => {
       return;
     }
 
-    //exclude confirmPassword
+    // Exclude confirmPassword from the data sent to the API
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {confirmPassword, ...userData} = formData
+    const { confirmPassword, ...userData } = formData;
 
-    // Dispatch the createUser thunk
-    dispatch(signupUser(userData))
-      .unwrap()
-      .then(() => {
-        alert("Account successfully created! Please check your email for verification");
-        dispatch(closeModal()); // Close modal on successful account creation
-      })
-      .catch((error) => {
-        console.error("Error creating user:", error);
-        
-      });
+    try {
+      // Dispatch the signupUser thunk
+      await dispatch(signupUser(userData)).unwrap();
+      alert("Account successfully created!");
+      dispatch(closeModal());
+      navigate('/dashboard')
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   };
 
   // Close the modal
@@ -66,11 +69,11 @@ const SignUpModal = () => {
     dispatch(closeModal());
   };
 
-  //Switch to login modal
+  // Switch to login modal
   const switchToLoginModal = () => {
     dispatch(closeModal());
-    dispatch(openModal('login'))
-  }
+    dispatch(openModal('login'));
+  };
 
   return (
     <div className="modal-overlay">
@@ -133,8 +136,12 @@ const SignUpModal = () => {
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
-        <p className="login-cta">Already have an account with us? {" "} 
-          <Link to="#" onClick={switchToLoginModal}>Log in</Link></p>
+        <p className="login-cta">
+          Already have an account with us?{" "}
+          <Link className="link" to="#" onClick={switchToLoginModal}>
+            Log in
+          </Link>
+        </p>
       </div>
     </div>
   );
