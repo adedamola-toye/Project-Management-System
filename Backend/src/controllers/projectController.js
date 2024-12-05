@@ -11,7 +11,7 @@ exports.createProject = async(req, res) => {
             return res.status(400).json({error: "Title and description are required"})
         }
         const newProject = await pool.query(
-            "INSERT INTO projects (title, description, created_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *"
+            "INSERT INTO projects (title, description, created_by, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *",
             [title, description, username, new Date(), new Date()]
         );
         res.json(newProject.rows[0]);
