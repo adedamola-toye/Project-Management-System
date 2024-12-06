@@ -1,9 +1,9 @@
 //Import dotenv library so we can store sensitive info in a .env file to keep it safe
 //,config() loads the environmenttal variables from the .env file into process.env file so we can access the variables defined in the .env file
 require("dotenv").config();
-console.log("Environment Variables Loaded: ", process.env);
+/* console.log("Environment Variables Loaded: ", process.env);
 console.log("Database URL: ", process.env.DATABASE_URL);
-console.log("Port set in .env: ", process.env.PORT);
+console.log("Port set in .env: ", process.env.PORT); */
 
 //Import express library to create a web server (important to set up routes and handle requests)
 const express = require("express");
@@ -43,15 +43,15 @@ const PORT = process.env.PORT || 3000;
 
 //Routes
 const usersRoutes = require('./src/routes/usersRoutes')
-const tasksRoutes = require('./src/routes/tasksRoutes')
+//const tasksRoutes = require('./src/routes/tasksRoutes')
 const projectsRoutes = require('./src/routes/projectsRoutes')
 const authRoutes = require('./src/routes/authRoutes')
 const projectRoleRoutes = require('./src/routes/projectRoleRoutes')
 app.use('/api/users', usersRoutes)
-app.use('/api/tasks', tasksRoutes)
+//app.use('/api/tasks', tasksRoutes)
 app.use('/api/projects', projectsRoutes)
 app.use('/api/auth', authRoutes)
-app.use('/api/projects', projectRoleRoutes)
+app.use('/api/project-roles', projectRoleRoutes)
 
 //Start the server and tell it to listen for requests on the PORT defined. When server is running, it will run the function
 app.listen(PORT, () => {

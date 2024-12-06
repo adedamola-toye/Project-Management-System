@@ -11,7 +11,7 @@ const AppRouter: React.FC = () => {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/project/:projectId" element={<ProjectView />} />
+        <Route path="/projects/:projectId" element={<ProjectView />} />
         <Route path="/dashboard" element={<Dashboard/>}/>
         {/* Catch-all route for 404 */}
         <Route path="*" element={<h1>404 Not Found</h1>} />

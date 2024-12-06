@@ -1,16 +1,18 @@
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 
-exports.protect = async (req, res, next) => {
+
+
+const protect = async (req, res, next) => {
   try {
-    // 1. Get token from header
+    // 1. Get token from the header
     if (!req.headers.authorization?.startsWith('Bearer')) {
       return res.status(401).json({ 
         error: "Please provide a valid Bearer token in the Authorization header" 
       });
     }
 
-    const token = req.headers.authorization.split(" ")[1];
+    let token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ 
@@ -18,10 +20,10 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // 2. Verify token
+    // 2. Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    // 3. Check if user still exists in database
+    // 3. Check if user exists in the database
     const currentUser = await pool.query(
       "SELECT id, username, email FROM users WHERE id = $1",
       [decoded.userId]
@@ -33,13 +35,13 @@ exports.protect = async (req, res, next) => {
       });
     }
 
-    // 4. Attach user information to request object
+    // 4. Attach user information to the request object
     req.user = {
       ...decoded,
       ...currentUser.rows[0],
-      username: currentUser.rows[0].username, 
-      email: currentUser.rows[0].email,
     };
+
+    console.log("User in authMiddleware:", req.user);  // Log the user info
 
     next();
   } catch (error) {
@@ -59,6 +61,8 @@ exports.protect = async (req, res, next) => {
     });
   }
 };
+
+module.exports = { protect };
 
 // Optional: Middleware to validate refresh token
 exports.validateRefreshToken = (req, res, next) => {

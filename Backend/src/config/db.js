@@ -1,7 +1,7 @@
 // Load environment variables from .env file
 require("dotenv").config();
-console.log("Environmental Variables Loaded: ", process.env)
-console.log("Database URL: ", process.env.DATABASE_URL)
+/* console.log("Environmental Variables Loaded: ", process.env)
+console.log("Database URL: ", process.env.DATABASE_URL) */
 
 // Import Pool class from pg package
 const { Pool } = require("pg"); // to manage a pool of db connections

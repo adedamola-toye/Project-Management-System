@@ -58,7 +58,7 @@ exports.createUser = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const allUsers = await pool.query(
-      "SELECT id, username, email, role, created_at, updated_at FROM users"
+      "SELECT id, username, email, created_at, updated_at FROM users"
     );
     res.json(allUsers.rows);
   } catch (error) {
@@ -72,7 +72,7 @@ exports.getUserById = async (req, res) => {
   try {
     // Include updated_at in the SELECT query
     const user = await pool.query(
-      "SELECT id, username, email, role, created_at, updated_at FROM users WHERE id=$1",
+      "SELECT id, username, email, created_at, updated_at FROM users WHERE id=$1",
       [id]
     );
     if (user.rows.length > 0) {
@@ -89,7 +89,7 @@ exports.getUserById = async (req, res) => {
 // Update User by id
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { username = null, email = null, password = null, role = null } = req.body;
+  const { username = null, email = null, password = null} = req.body;
 
   try {
     const currentUser = await pool.query(
@@ -105,7 +105,6 @@ exports.updateUser = async (req, res) => {
     const updatedData = {
       username: username === null ? user.username : username,
       email: email === null ? user.email : email,
-      role: role === null ? user.role : role,
       password_hash: password ? await bcrypt.hash(password, 10) : user.password_hash,
     };
 
@@ -120,10 +119,7 @@ exports.updateUser = async (req, res) => {
       updateFields.push('email');
       setValues.push(updatedData.email);
     }
-    if (updatedData.role !== user.role) {
-      updateFields.push('role');
-      setValues.push(updatedData.role);
-    }
+
     if (updatedData.password_hash !== user.password_hash) {
       updateFields.push('password_hash');
       setValues.push(updatedData.password_hash);

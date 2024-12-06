@@ -35,8 +35,8 @@ export const createProject = createAsyncThunk(
   'project/createProject',
   async (project: Omit<Project, 'id'>, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/projects`, project);
-      return response.data; // Assuming API returns created project with an id
+      const response = await axios.post(`${API_URL}/api/projects`, project);
+      return response.data; 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(error.response?.data || 'Project creation failed');

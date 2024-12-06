@@ -1,28 +1,44 @@
 
 const pool = require('../config/db');
 
-exports.assignRole= async(req, res) => {
-    const {projectId} = req.params;
-    const {userId, role} = req.body;
+exports.assignRole = async (req, res) => {
+    const { projectId } = req.params;
+    const { userId, role } = req.body;
 
-    try{
-        const validRoles = ['Admin', 'Member', 'Viewer'];
-        if(!validRoles.includes(role)){
-            return res.status(400).json({error:"Invalid role"})
-        }
+    if (!userId || !role) {
+        return res.status(400).json({ error: "userId and role are required" });
+    }
+
+    const validRoles = ['Admin', 'Member', 'Viewer'];
+    if (!validRoles.includes(role)) {
+        return res.status(400).json({ error: "Invalid role" });
+    }
+
+    try {
         const roleAssignment = await pool.query(
             `INSERT INTO project_roles (user_id, project_id, role)
             VALUES ($1, $2, $3)
-            ON CONFLICT (user_id, project_id) DO UPDATE SET ROLE = EXCLUDED.role`,
+            ON CONFLICT (user_id, project_id) DO UPDATE 
+            SET role = EXCLUDED.role
+            RETURNING user_id, project_id, role`,
             [userId, projectId, role]
         );
-        res.status(201).json({message:"Role assigned successfully", roleAssignment})
-    }
-    catch(error){
+        
+
+        console.log(roleAssignment.rows);
+
+
+        res.status(201).json({
+            message: "Role assigned successfully",
+            roleAssignment: roleAssignment.rows,
+        });
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error: "Internal server error"})
+        res.status(500).json({ error: "Internal server error" });
     }
-}
+};
+
+
 
 exports.getRolesForProject = async (req, res) => {
     const {projectId} = req.params;
@@ -44,6 +60,7 @@ exports.getRolesForProject = async (req, res) => {
 
 exports.getUserRoles=async(req,res) => {
     const {userId}=req.params;
+    console.log(`User ID: ${userId}`);
     try{
         const roles = await pool.query(
             `SELECT projects.title AS project, project_roles.role
@@ -52,6 +69,8 @@ exports.getUserRoles=async(req,res) => {
             WHERE project_roles.user_id = $1`,
             [userId]
         );
+        console.log("Roles for User:", roles.rows);
+
         res.status(200).json(roles.rows);
     }
     catch(error){
