@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProject } from "../../store/project/projectSlice";
-import { closeModal} from "../../store/modal/modalSlice";
+import { closeModal } from "../../store/modal/modalSlice";
 import { AppDispatch, RootState } from "../../store/store"; 
 import '../Page Styles/Modals.css';
 import { useNavigate } from 'react-router-dom';
@@ -11,10 +11,10 @@ const ProjectFormModal: React.FC = () => {
   const [description, setDescription] = useState('');
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
+
   // Get current username from the auth state
   const currentUsername = useSelector((state: RootState) => state.auth.user?.username || '');
-  
+
   // Check modal state from Redux
   const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
 
@@ -25,11 +25,10 @@ const ProjectFormModal: React.FC = () => {
     e.preventDefault();
     const newProject = { title, description, created_by: currentUsername };
     const response = await dispatch(createProject(newProject));
-    console.log("Project successfully created")
+    console.log("Project successfully created");
     if (response?.payload?.id) { 
       navigate(`/projects/${response.payload.id}`); 
     }
-  
     dispatch(closeModal());
   };
 

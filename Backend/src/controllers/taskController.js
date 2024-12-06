@@ -6,7 +6,7 @@ exports.createTask = async (req, res) => {
   const { projectId } = req.params;
   console.log(projectId);
 
-  // Extract other fields from the request body
+
   const {
     title,
     description,
