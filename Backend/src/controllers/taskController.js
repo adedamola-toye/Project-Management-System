@@ -197,10 +197,9 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   console.log("hello from delete Task");
-  const { taskId, projectId } = req.params; // Get taskId and projectId from params
-
-  console.log("Task from deleteTask:", taskId);  // Log taskId to check if it is correct
-  console.log("Project from delete Task:", projectId);  // Log projectId for verification
+  const { taskId, projectId } = req.params;
+  console.log("Task from deleteTask:", taskId);  
+  console.log("Project from delete Task:", projectId);  
 
   try {
     // Use the correct taskId in the query
