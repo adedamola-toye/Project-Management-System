@@ -1,0 +1,135 @@
+/* Project View Styles */
+.project-view {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .project-view h1 {
+    color: #5a189a;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .project-view p {
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .assign-role {
+    margin-top: 2rem;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .assign-role h3 {
+    color: #5a189a;
+    margin-bottom: 1rem;
+  }
+  
+  .assign-role input[type="text"] {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    outline: none;
+    transition: border 0.3s;
+  }
+  
+  .assign-role input[type="text"]:focus {
+    border-color: #5a189a;
+  }
+  
+  .assign-role ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .assign-role li {
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .assign-role li:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .assign-role select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    outline: none;
+  }
+  
+  .assign-role button {
+    background-color: #5a189a;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .assign-role button:hover {
+    background-color: #4c1580;
+  }
+  
+  .project-view h3 {
+    margin-top: 2rem;
+    color: #5a189a;
+  }
+  
+  .project-view ul {
+    padding: 0;
+    list-style-type: none;
+  }
+  
+  .project-view li {
+    margin-bottom: 1rem;
+  }
+  
+  .project-view li:last-child {
+    margin-bottom: 0;
+  }
+  
+  .project-view button {
+    background-color: #5a189a;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 2rem;
+  }
+  
+  .project-view button:hover {
+    background-color: #4c1580;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .project-view {
+      padding: 1.5rem;
+    }
+  
+    .assign-role {
+      padding: 1rem;
+    }
+  
+    .assign-role input[type="text"],
+    .assign-role select,
+    .assign-role button {
+      font-size: 0.9rem;
+    }
+  }
+  
