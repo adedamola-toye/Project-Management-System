@@ -2,17 +2,15 @@ import { useState } from "react";
 import "./Navbar.css";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { openModal } from "../store/modal/modalSlice";
+import { openModal } from "../store/modal/modalSlice"
 import { logout } from "../store/auth/authSlice";
-import { RootState } from "../store/store";
 
-
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const dispatch = useDispatch();
   const [navbarOpen, setNavbarOpen] = useState(false);
   
   // Get auth state from Redux
-  const { user, accessToken } = useSelector((state: RootState) => state.auth);
+  const { user, accessToken } = useSelector((state) => state.auth);
   const isAuthenticated = !!accessToken && !!user;
 
   const toggleMenu = () => {
@@ -30,7 +28,7 @@ const Navbar: React.FC = () => {
 
   const openLoginModal = () => {
     dispatch(openModal('login'));
-    console.log("Login modal opened")
+    console.log("Login modal opened");
     closeMenu();
   };
 
@@ -55,7 +53,7 @@ const Navbar: React.FC = () => {
         <li onClick={closeMenu}>Home</li>
         {isAuthenticated ? (
           <>
-          <li>Dashboard</li>
+            <li>Dashboard</li>
             <li onClick={handleLogout}>Log Out</li>
           </>
         ) : (

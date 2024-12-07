@@ -5,7 +5,7 @@ import Dashboard from '../pages/Dashboard';
 import ProjectView from '../pages/ProjectView';
 import LandingPage from '../pages/LandingPage';
 
-const AppRouter: React.FC = () => {
+const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>

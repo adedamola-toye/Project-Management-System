@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal } from "../../store/modal/modalSlice";
-import { RootState, AppDispatch } from "../../store/store";
 import "../Page Styles/Modals.css";
 import { FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -10,7 +9,7 @@ import { signupUser } from "../../store/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
 const SignUpModal = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Form state
@@ -21,18 +20,18 @@ const SignUpModal = () => {
     confirmPassword: "",
   });
 
-  // Access Redux state - Updated to use auth slice
-  const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
-  const { loading, error } = useSelector((state: RootState) => ({
+  // Access Redux state
+  const { isOpen, modalType } = useSelector((state) => state.modal);
+  const { loading, error } = useSelector((state) => ({
     loading: state.auth.loading.signup,
-    error: state.auth.error.signup
+    error: state.auth.error.signup,
   }));
 
   // Only render the modal if it is open and the modal type is 'signup'
   if (!isOpen || modalType !== "signup") return null;
 
   // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -40,7 +39,7 @@ const SignUpModal = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Password confirmation validation
@@ -50,7 +49,6 @@ const SignUpModal = () => {
     }
 
     // Exclude confirmPassword from the data sent to the API
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { confirmPassword, ...userData } = formData;
 
     try {
@@ -58,7 +56,7 @@ const SignUpModal = () => {
       await dispatch(signupUser(userData)).unwrap();
       alert("Account successfully created!");
       dispatch(closeModal());
-      navigate('/dashboard')
+      navigate('/dashboard');
     } catch (error) {
       console.error("Error creating user:", error);
     }
@@ -72,7 +70,7 @@ const SignUpModal = () => {
   // Switch to login modal
   const switchToLoginModal = () => {
     dispatch(closeModal());
-    dispatch(openModal('login'));
+    dispatch(openModal("login"));
   };
 
   return (

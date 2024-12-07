@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, openModal } from "../../store/modal/modalSlice";
-import { RootState, AppDispatch } from "../../store/store";
 import { loginUser } from "../../store/auth/authSlice";
 import { FaTimes } from "react-icons/fa";
 import "../Page Styles/Modals.css";
@@ -9,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
 const LoginModal = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Form state
@@ -19,8 +18,8 @@ const LoginModal = () => {
   });
 
   // Access Redux state
-  const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
-  const { loading, error } = useSelector((state: RootState) => ({
+  const { isOpen, modalType } = useSelector((state) => state.modal);
+  const { loading, error } = useSelector((state) => ({
     loading: state.auth.loading.login,
     error: state.auth.error.login,
   }));
@@ -29,7 +28,7 @@ const LoginModal = () => {
   if (!isOpen || modalType !== "login") return null;
 
   // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -37,7 +36,7 @@ const LoginModal = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -101,7 +100,7 @@ const LoginModal = () => {
         </form>
         <p className="login-cta">
           Already have an account with us?{" "}
-          <Link  className="link"to="#" onClick={switchToSignUpModal}>
+          <Link className="link" to="#" onClick={switchToSignUpModal}>
             Sign Up
           </Link>
         </p>

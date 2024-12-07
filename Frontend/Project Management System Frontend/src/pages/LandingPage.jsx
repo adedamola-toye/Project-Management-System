@@ -1,13 +1,12 @@
 
-
 import Navbar from "../components/Navbar";
-import SignUpModal from "./Modals/SignUpModal" // Import the SignUpModal component
+import SignUpModal from "./Modals/SignUpModal"; // Import the SignUpModal component
 import LoginModal from "./Modals/LogInModal";
 import "./Page Styles/LandingPage.css";
 import { useDispatch } from "react-redux";
 import { openModal } from "../store/modal/modalSlice";
 
-const LandingPage: React.FC = () => {
+const LandingPage = () => {
   const dispatch = useDispatch();
 
   const openModalHandler = () => {
@@ -44,8 +43,8 @@ const LandingPage: React.FC = () => {
       </div>
 
       {/* SignUp Modal */}
-      <SignUpModal/>
-      <LoginModal/>
+      <SignUpModal />
+      <LoginModal />
     </div>
   );
 };

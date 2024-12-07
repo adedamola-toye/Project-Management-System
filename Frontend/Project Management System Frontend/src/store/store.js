@@ -3,7 +3,8 @@ import authReducer from './auth/authSlice';
 import userReducer from './user/userSlice';
 import taskReducer from './task/taskSlice';
 import projectReducer from './project/projectSlice';
-import modalReducer from './modal/modalSlice'
+import modalReducer from './modal/modalSlice';
+import projectRoleReducer from './projectRole/projectRoleSlice';
 
 // Create the Redux store
 const store = configureStore({
@@ -12,11 +13,9 @@ const store = configureStore({
     user: userReducer,
     task: taskReducer,
     project: projectReducer,
-    modal:modalReducer
+    modal: modalReducer,
+    projectRole: projectRoleReducer
   },
 });
-
-export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof store.getState>;
 
 export default store;

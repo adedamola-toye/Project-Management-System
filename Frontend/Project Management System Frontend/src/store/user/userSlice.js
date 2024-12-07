@@ -1,48 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-//import { AxiosError } from "axios";
-
-// User Interface
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  role?: string;
-}
-
-interface UserState {
-  users: User[];
-  loading: boolean;
-  error: string | null;
-  username: string | null;
-  email: string | null;
-  token: string | null;
-}
-
-const initialState: UserState = {
-  users: [],
-  loading: false,
-  error: null,
-  username: null,
-  email: null,
-  token: null,
-};
-
 
 // Define API URL
-const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users";
-
-
+const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000";
 
 
 // Create user async action
-export const createUser = createAsyncThunk<User, Omit<User, "id">>(
+export const createUser = createAsyncThunk(
   "user/createUser",
   async (userData, { rejectWithValue }) => {
     try {
-      console.log("Creating user with data:", userData)
-      const response = await axios.post<User>(`${API_URL}/api/users`, userData);
+      console.log("Creating user with data:", userData);
+      const response = await axios.post(`${API_URL}/api/users`, userData);
       console.log("User created successfully:", response.data);
       return response.data;
     } catch (error) {
@@ -50,7 +19,6 @@ export const createUser = createAsyncThunk<User, Omit<User, "id">>(
         console.error("Axios error:", error.response?.data || error.message);
         return rejectWithValue(error.response?.data || "Something went wrong");
       } else {
-        
         console.error("Unknown error:", error);
         return rejectWithValue("An unexpected error occurred.");
       }
@@ -58,39 +26,35 @@ export const createUser = createAsyncThunk<User, Omit<User, "id">>(
   }
 );
 
-
 // Get all users async action
-export const getAllUsers = createAsyncThunk<User[]>(
+export const getAllUsers = createAsyncThunk(
   "user/getAllUsers",
   async () => {
-    const response = await axios.get<User[]>(`${API_URL}/api/users`);
+    const response = await axios.get(`${API_URL}/api/users`);
     return response.data;
   }
 );
 
 // Get user by ID async action
-export const getUserById = createAsyncThunk<User, string>(
+export const getUserById = createAsyncThunk(
   "user/getUserById",
   async (userId) => {
-    const response = await axios.get<User>(`${API_URL}/api/users/${userId}`);
+    const response = await axios.get(`${API_URL}/api/users/${userId}`);
     return response.data;
   }
 );
 
 // Update user async action
-export const updateUser = createAsyncThunk<
-  User,
-  { userId: string; userData: Partial<User> }
->(
+export const updateUser = createAsyncThunk(
   "user/updateUser",
   async ({ userId, userData }) => {
-    const response = await axios.put<User>(`${API_URL}/api/users/${userId}`, userData);
+    const response = await axios.put(`${API_URL}/api/users/${userId}`, userData);
     return response.data;
   }
 );
 
 // Delete user async action
-export const deleteUser = createAsyncThunk<string, string>(
+export const deleteUser = createAsyncThunk(
   "user/deleteUser",
   async (userId) => {
     await axios.delete(`${API_URL}/api/users/${userId}`);
@@ -101,7 +65,14 @@ export const deleteUser = createAsyncThunk<string, string>(
 // User slice definition
 const userSlice = createSlice({
   name: "user",
-  initialState,
+  initialState: {
+    users: [],
+    loading: false,
+    error: null,
+    username: null,
+    email: null,
+    token: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -115,22 +86,14 @@ const userSlice = createSlice({
       })
       .addCase(createUser.rejected, (state, action) => {
         state.loading = false;
-      
-        // Check if action.payload is a string
         if (typeof action.payload === 'string') {
-          state.error = action.payload;  // Directly use the string error message
-        }
-        // If action.payload is an object, it might contain an error property
-        else if (action.payload && typeof action.payload === 'object') {
-          // Safely access the 'error' property, asserting the type of action.payload
-          state.error = (action.payload as { error: string }).error || 'An error occurred';
+          state.error = action.payload;
+        } else if (action.payload && typeof action.payload === 'object') {
+          state.error = action.payload.error || 'An error occurred';
         } else {
-          state.error = 'An error occurred'; // Default error message
+          state.error = 'An error occurred';
         }
       })
-      
-      
-      
 
       // Get All Users
       .addCase(getAllUsers.pending, (state) => {
@@ -142,7 +105,7 @@ const userSlice = createSlice({
       })
       .addCase(getAllUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.error.message || "Failed to fetch users.") as string;
+        state.error = action.error.message || "Failed to fetch users.";
       })
 
       // Get User by ID
@@ -197,5 +160,7 @@ const userSlice = createSlice({
       });
   },
 });
+
+export const getUsers = (state) => state.user.users;
 
 export default userSlice.reducer;

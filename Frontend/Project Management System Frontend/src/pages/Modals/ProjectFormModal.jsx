@@ -2,26 +2,25 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProject } from "../../store/project/projectSlice";
 import { closeModal } from "../../store/modal/modalSlice";
-import { AppDispatch, RootState } from "../../store/store"; 
-import '../Page Styles/Modals.css';
 import { useNavigate } from 'react-router-dom';
+import '../Page Styles/Modals.css';
 
-const ProjectFormModal: React.FC = () => {
+const ProjectFormModal = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Get current username from the auth state
-  const currentUsername = useSelector((state: RootState) => state.auth.user?.username || '');
+  const currentUsername = useSelector((state) => state.auth.user?.username || '');
 
   // Check modal state from Redux
-  const { isOpen, modalType } = useSelector((state: RootState) => state.modal);
+  const { isOpen, modalType } = useSelector((state) => state.modal);
 
   // Only render if the modal is open and the modalType is 'project-form'
   if (!isOpen || modalType !== "project-form") return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newProject = { title, description, created_by: currentUsername };
     const response = await dispatch(createProject(newProject));

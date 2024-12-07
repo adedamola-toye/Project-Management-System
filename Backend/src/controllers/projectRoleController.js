@@ -15,18 +15,26 @@ exports.assignRole = async (req, res) => {
     }
 
     try {
-        const roleAssignment = await pool.query(
+        // Step 1: Insert or update the role in the project_roles table
+        await pool.query(
             `INSERT INTO project_roles (user_id, project_id, role)
             VALUES ($1, $2, $3)
-            ON CONFLICT (user_id, project_id) DO UPDATE 
-            SET role = EXCLUDED.role
-            RETURNING user_id, project_id, role`,
+            ON CONFLICT (user_id, project_id) 
+            DO UPDATE SET role = EXCLUDED.role`,
             [userId, projectId, role]
         );
-        
+
+        // Step 2: Fetch the username and project title after role assignment
+        const roleAssignment = await pool.query(
+            `SELECT u.username, pr.user_id, pr.project_id, pr.role, p.title AS project_title
+            FROM project_roles pr
+            JOIN users u ON pr.user_id = u.id
+            JOIN projects p ON pr.project_id = p.id
+            WHERE pr.user_id = $1 AND pr.project_id = $2`,
+            [userId, projectId]
+        );
 
         console.log(roleAssignment.rows);
-
 
         res.status(201).json({
             message: "Role assigned successfully",
@@ -37,6 +45,7 @@ exports.assignRole = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 
 

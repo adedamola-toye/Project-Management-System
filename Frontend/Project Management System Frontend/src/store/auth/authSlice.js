@@ -1,35 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Define API URL
+// Define API URL using Vite's import.meta.env
 const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  role?: string;
-}
-
-interface AuthState {
-  user: User | null; 
-  accessToken: string | null;
-  refreshToken: string | null;
-  loading: {
-    login: boolean;
-    signup: boolean;
-    refresh: boolean;
-  };
-  error: {
-    login: string | null;
-    signup: string | null;
-    refresh: string | null;
-  };
-}
-
-
-const initialState: AuthState = {
+// Initial State
+const initialState = {
   user: null,
   accessToken: localStorage.getItem('accessToken'),
   refreshToken: localStorage.getItem('refreshToken'),
@@ -48,11 +24,7 @@ const initialState: AuthState = {
 // Signup async thunk
 export const signupUser = createAsyncThunk(
   'auth/signup',
-  async ({ username, email, password }: { 
-    username: string; 
-    email: string; 
-    password: string 
-  }, { rejectWithValue }) => {
+  async ({ username, email, password }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/api/auth/signup`, {
         username,
@@ -79,10 +51,7 @@ export const signupUser = createAsyncThunk(
 // Login async thunk
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async ({ email, password }: { 
-    email: string; 
-    password: string 
-  }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
@@ -121,7 +90,7 @@ export const refreshUserToken = createAsyncThunk(
   'auth/refreshToken',
   async (_, { getState, rejectWithValue }) => {
     try {
-      const state = getState() as { auth: AuthState };
+      const state = getState();
       const refreshToken = state.auth.refreshToken;
 
       if (!refreshToken) {
@@ -180,7 +149,7 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.loading.signup = false;
-        state.error.signup = action.payload as string;
+        state.error.signup = action.payload;
       })
       // Login cases
       .addCase(loginUser.pending, (state) => {
@@ -196,7 +165,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading.login = false;
-        state.error.login = action.payload as string;
+        state.error.login = action.payload;
       })
       // Refresh token cases
       .addCase(refreshUserToken.pending, (state) => {
@@ -210,7 +179,7 @@ const authSlice = createSlice({
       })
       .addCase(refreshUserToken.rejected, (state, action) => {
         state.loading.refresh = false;
-        state.error.refresh = action.payload as string;
+        state.error.refresh = action.payload;
       });
   }
 });
