@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
 import { Navigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import './Page Styles/Dashoard.css';
 
 import { openModal } from '../store/modal/modalSlice';
 import ProjectFormModal from './Modals/ProjectFormModal';
-import { getAllProjects } from '../store/project/projectSlice';
-import { getProjectById } from '../store/project/projectSlice';
+import { getProjectById, getAllProjects } from '../store/project/projectSlice';
 import { getUserRoles } from '../store/projectRole/projectRoleSlice';
 
 const Dashboard = () => {
@@ -16,14 +14,12 @@ const Dashboard = () => {
   const { user, accessToken } = useSelector((state) => state.auth);
   const isAuthenticated = !!accessToken && !!user;
 
-
   const [adminProjects, setAdminProjects] = useState([]);
   const [memberProjects, setMemberProjects] = useState([]);
   const [viewerProjects, setViewerProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [projects, setProjects] = useState([]);
-  
+
   useEffect(() => {
     const fetchProjectsData = async () => {
       if (!user.id) {
@@ -35,39 +31,45 @@ const Dashboard = () => {
         // Fetch user roles
         const rolesResult = await dispatch(getUserRoles(user.id)).unwrap();
         console.log('Roles:', rolesResult); // Debug roles data
-  
-        const projectPromises = rolesResult.map(async ({ project, role }) => {
+
+        const projectPromises = rolesResult.map(async ({ project_id, project, role }) => {
           try {
             // Parse project ID to an integer (if necessary)
-            const projectId = parseInt(project, 10);
-  
+            const projectId = parseInt(project_id, 10);
+
             if (isNaN(projectId)) {
-              console.error(`Invalid project ID: ${project}`);
+              console.error(`Invalid project ID: ${project_id}`);
               return null; // Skip invalid project IDs
             }
-  
+
             // Fetch project data with the parsed project ID
             const projectData = await dispatch(getProjectById(projectId)).unwrap();
             return { ...projectData, role };
           } catch (error) {
-            console.error(`Failed to fetch project with ID ${project}:`, error);
+            console.error(`Failed to fetch project with ID ${project_id}:`, error);
             return null;
           }
         });
-  
+
         // Resolve and filter project data
         const projectsData = (await Promise.all(projectPromises)).filter(Boolean);
-        setProjects(projectsData);
+        // Categorize projects based on role
+        const admin = projectsData.filter(project => project.role === 'Admin');
+        const member = projectsData.filter(project => project.role === 'Member');
+        const viewer = projectsData.filter(project => project.role === 'Viewer');
+
+        setAdminProjects(admin);
+        setMemberProjects(member);
+        setViewerProjects(viewer);
       } catch (error) {
         console.error('Error fetching projects:', error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchProjectsData();
   }, [dispatch, user.id, accessToken]);
-  
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
