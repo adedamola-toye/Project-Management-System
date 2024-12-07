@@ -1,3 +1,13 @@
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getProjectById } from "../store/project/projectSlice";
+import { getRolesForProject } from "../store/projectRole/projectRoleSlice";
+import { getUserById } from "../store/user/userSlice"; 
+import Navbar from "../components/Navbar";
+import AssignRole from "../components/AssignRole"; 
+import './Page Styles/ProjectView.css';
+
 const ProjectView = () => {
   const { projectId } = useParams();
   const dispatch = useDispatch();
@@ -7,7 +17,7 @@ const ProjectView = () => {
   const { roles, isLoading: rolesLoading, error: rolesError } = useSelector(
     (state) => state.projectRole
   );
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.auth);
   const [creatorUsername, setCreatorUsername] = useState(null);
   const [updatedByUsername, setUpdatedByUsername] = useState(null);
 
@@ -17,6 +27,7 @@ const ProjectView = () => {
       dispatch(getRolesForProject(projectId));
     }
   }, [projectId, dispatch]);
+
 
   useEffect(() => {
     if (currentProject && currentProject.created_by) {
@@ -40,9 +51,20 @@ const ProjectView = () => {
     }
   }, [currentProject, dispatch]);
 
+  if(!currentUser){
+    console.log("No current user");
+    return;
+  }
+
   const isAdmin =
     currentUser?.role === "admin" ||
     currentProject?.created_by === currentUser?.id;
+  
+    console.log(isAdmin)
+    console.log(currentUser)
+    console.log("Project created by:", currentProject?.created_by);
+    console.log("Current user ID:", currentUser?.id);
+
 
   const groupedRoles = roles.reduce(
     (acc, role) => {
@@ -62,7 +84,7 @@ const ProjectView = () => {
     <>
       <Navbar />
       <div className="project-view">
-        {/* Handle loading and error conditions outside the return statement */}
+
         {loading && <div>Loading project details...</div>}
         {error && <div>Error: {error.message}</div>}
 
