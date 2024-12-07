@@ -82,6 +82,7 @@ export const getUserRoles = createAsyncThunk(
     const accessToken = getAccessToken(state);
 
     try {
+      console.log("Fetching roles for userId:", userId);
       const response = await axios.get(`${API_URL}/api/project-roles/users/${userId}/roles`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -268,8 +269,10 @@ const projectRoleSlice = createSlice({
 
       // Get user roles
       .addCase(getUserRoles.fulfilled, (state, action) => {
-        state.roles = action.payload;
-        state.isLoading = false;
+        const userRoles = action.payload;
+        const uniqueProjects = [...new Set(userRoles.map(role => role.project))];
+        state.projectsCount = uniqueProjects.length;
+        state.uniqueProjects=uniqueProjects;
       })
 
       // Update role

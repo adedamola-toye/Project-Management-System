@@ -67,26 +67,26 @@ exports.getRolesForProject = async (req, res) => {
     }
 }
 
-exports.getUserRoles=async(req,res) => {
-    const {userId}=req.params;
+exports.getUserRoles = async (req, res) => {
+    const { userId } = req.params;
     console.log(`User ID: ${userId}`);
-    try{
+    try {
         const roles = await pool.query(
-            `SELECT projects.title AS project, project_roles.role
+            `SELECT projects.id AS project_id, projects.title AS project, project_roles.role
             FROM project_roles
-            JOIN projects ON project_roles.project_id=projects.id
+            JOIN projects ON project_roles.project_id = projects.id
             WHERE project_roles.user_id = $1`,
             [userId]
         );
         console.log("Roles for User:", roles.rows);
 
-        res.status(200).json(roles.rows);
-    }
-    catch(error){
+        res.status(200).json(roles.rows); // Return project_id along with project title and role
+    } catch (error) {
         console.error(error);
-        res.status(500).json({error:"Internal server error"})
+        res.status(500).json({ error: "Internal server error" });
     }
 }
+
 
 exports.updateRole = async(req, res) => {
     const {projectId, userId} = req.params;

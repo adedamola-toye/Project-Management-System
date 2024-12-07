@@ -1,45 +1,73 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { Navigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import './Page Styles/Dashoard.css';
-import { useDispatch } from 'react-redux';
+
 import { openModal } from '../store/modal/modalSlice';
 import ProjectFormModal from './Modals/ProjectFormModal';
+import { getAllProjects } from '../store/project/projectSlice';
+import { getProjectById } from '../store/project/projectSlice';
+import { getUserRoles } from '../store/projectRole/projectRoleSlice';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { user, accessToken } = useSelector((state) => state.auth);
   const isAuthenticated = !!accessToken && !!user;
 
+
   const [adminProjects, setAdminProjects] = useState([]);
   const [memberProjects, setMemberProjects] = useState([]);
   const [viewerProjects, setViewerProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [projects, setProjects] = useState([]);
+  
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchProjectsData = async () => {
+      if (!user.id) {
+        console.log("User doesn't exist?");
+        return; // Exit early if there's no user ID
+      }
       setLoading(true);
       try {
-        const response = await fetch('/api/projects', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+        // Fetch user roles
+        const rolesResult = await dispatch(getUserRoles(user.id)).unwrap();
+        console.log('Roles:', rolesResult); // Debug roles data
+  
+        const projectPromises = rolesResult.map(async ({ project, role }) => {
+          try {
+            // Parse project ID to an integer (if necessary)
+            const projectId = parseInt(project, 10);
+  
+            if (isNaN(projectId)) {
+              console.error(`Invalid project ID: ${project}`);
+              return null; // Skip invalid project IDs
+            }
+  
+            // Fetch project data with the parsed project ID
+            const projectData = await dispatch(getProjectById(projectId)).unwrap();
+            return { ...projectData, role };
+          } catch (error) {
+            console.error(`Failed to fetch project with ID ${project}:`, error);
+            return null;
+          }
         });
-        const data = await response.json();
-        setAdminProjects(data.adminProjects || []);
-        setMemberProjects(data.memberProjects || []);
-        setViewerProjects(data.viewerProjects || []);
+  
+        // Resolve and filter project data
+        const projectsData = (await Promise.all(projectPromises)).filter(Boolean);
+        setProjects(projectsData);
       } catch (error) {
-        console.error('Failed to fetch projects:', error);
+        console.error('Error fetching projects:', error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchProjects();
-  }, [accessToken]);
+  
+    fetchProjectsData();
+  }, [dispatch, user.id, accessToken]);
+  
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
