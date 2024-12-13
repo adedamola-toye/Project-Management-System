@@ -1,107 +1,195 @@
 .dashboard-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .dashboard-header {
-    margin-bottom: 2rem;
-  }
-  
-  .dashboard-header h1 {
-    color: #5a189a;
-    margin-bottom: 0.5rem;
-    text-align: center;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.dashboard-header h1 {
+  color: #5a189a;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card h3 {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-number {
+  color: #5a189a;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.recent-projects, .quick-actions {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #5a189a;
+  margin-bottom: 1rem;
+}
+
+.create-project-btn {
+  background: #5a189a;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.create-project-btn:hover {
+  background: #4c1580;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.action-buttons button {
+  padding: 0.75rem;
+  border: 1px solid #5a189a;
+  border-radius: 4px;
+  background: white;
+  color: #5a189a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-buttons button:hover {
+  background: #5a189a;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
   }
 
-  
-  
   .dashboard-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    grid-template-columns: 1fr;
   }
-  
-  .stat-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .stat-card h3 {
-    color: #666;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .stat-number {
-    color: #5a189a;
-    font-size: 2rem;
-    font-weight: bold;
-    text-align: center;
-  }
-  
-  .dashboard-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-  }
-  
-  .recent-projects, .quick-actions {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    color: #5a189a;
-    margin-bottom: 1rem;
-  }
-  
-  .create-project-btn {
-    background: #5a189a;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 1rem;
-  }
-  
-  .create-project-btn:hover {
-    background: #4c1580;
-  }
-  
-  .action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .action-buttons button {
-    padding: 0.75rem;
-    border: 1px solid #5a189a;
-    border-radius: 4px;
-    background: white;
-    color: #5a189a;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .action-buttons button:hover {
-    background: #5a189a;
-    color: white;
-  }
-  
-  @media (max-width: 768px) {
-    .dashboard-content {
-      grid-template-columns: 1fr;
-    }
-    
-    .dashboard-stats {
-      grid-template-columns: 1fr;
-    }
-  }
+}
+
+.project-list, .adminProject-list, .memberProjects-list, .viewerProjects-list, .recentProjects-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.project-list li, .adminProject-list li, .memberProjects-list li, .viewerProjects-list li, .recentProjects-list li {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.project-list li:hover, .adminProject-list li:hover, .memberProjects-list li:hover, .viewerProjects-list li:hover, .recentProjects-list li:hover {
+  background-color: #e1e1e1;
+  transform: scale(1.02);
+}
+
+.project-list li a, .adminProject-list li a, .memberProjects-list li a, .viewerProjects-list li a, .recentProjects-list li a {
+  color: #5a189a;
+  text-decoration: none;
+}
+
+.project-list li a:hover, .adminProject-list li a:hover, .memberProjects-list li a:hover, .viewerProjects-list li a:hover, .recentProjects-list li a:hover {
+  color: #4c1580;
+}
+
+.see-more-btn {
+  background: #5a189a;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.see-more-btn:hover {
+  background: #4c1580;
+}
+
+.search-bar {
+  position: relative;
+  margin: 1rem;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.search-suggestions li {
+  padding: 3px;
+  cursor: pointer;
+}
+
+.search-suggestions li:hover {
+  background-color: #f0f0f0;
+}

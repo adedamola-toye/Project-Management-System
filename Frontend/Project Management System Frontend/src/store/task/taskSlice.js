@@ -1,82 +1,47 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Task Interface
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assignee?: string;
-  project_id: string;
-  due_date?: string;
-  priority: "Low" | "Medium" | "High";
-  status: "To Do" | "In Progress" | "Completed";
-  created_by: string;
-  updated_by?: string;
-}
-
-// TaskState Interface
-interface TaskState {
-  tasks: Task[];
-  loading: boolean;
-  error: string | null;
-}
-
-// Initial State
-const initialState: TaskState = {
-  tasks: [],
-  loading: false,
-  error: null,
-};
-
-// Define API URL
-const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users";
-
-
 // Create task async action
-export const createTask = createAsyncThunk<Task, Omit<Task, "id">>(
+export const createTask = createAsyncThunk(
   "task/createTask",
   async (taskData) => {
-    const response = await axios.post<Task>(API_URL, taskData);
+    const response = await axios.post(`${process.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users"}`, taskData);
     return response.data;
   }
 );
 
 // Get all tasks async action
-export const getAllTasks = createAsyncThunk<Task[]>(
+export const getAllTasks = createAsyncThunk(
   "task/getAllTasks",
   async () => {
-    const response = await axios.get<Task[]>(API_URL);
+    const response = await axios.get(`${process.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users"}`);
     return response.data;
   }
 );
 
 // Get task by ID async action
-export const getTaskById = createAsyncThunk<Task, string>(
+export const getTaskById = createAsyncThunk(
   "task/getTaskById",
   async (taskId) => {
-    const response = await axios.get<Task>(`${API_URL}/${taskId}`);
+    const response = await axios.get(`${process.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users"}/${taskId}`);
     return response.data;
   }
 );
 
 // Update task async action
-export const updateTask = createAsyncThunk<
-  Task,
-  { taskId: string; taskData: Partial<Task> }
->(
+export const updateTask = createAsyncThunk(
   "task/updateTask",
   async ({ taskId, taskData }) => {
-    const response = await axios.put<Task>(`${API_URL}/${taskId}`, taskData);
+    const response = await axios.put(`${process.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users"}/${taskId}`, taskData);
     return response.data;
   }
 );
 
 // Delete task async action
-export const deleteTask = createAsyncThunk<string, string>(
+export const deleteTask = createAsyncThunk(
   "task/deleteTask",
   async (taskId) => {
-    await axios.delete(`${API_URL}/${taskId}`);
+    await axios.delete(`${process.env.VITE_BACKEND_BASE_URL || "http://localhost:5000/users"}/${taskId}`);
     return taskId; // Return the taskId to update the state
   }
 );
@@ -84,7 +49,11 @@ export const deleteTask = createAsyncThunk<string, string>(
 // Task slice definition
 const taskSlice = createSlice({
   name: "task",
-  initialState,
+  initialState: {
+    tasks: [],
+    loading: false,
+    error: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder

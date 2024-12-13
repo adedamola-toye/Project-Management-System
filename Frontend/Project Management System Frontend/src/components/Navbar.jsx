@@ -6,6 +6,7 @@ import { openModal } from "../store/modal/modalSlice"
 import { logout } from "../store/auth/authSlice";
 
 const Navbar = () => {
+  console.log("Navbar is rendering")
   const dispatch = useDispatch();
   const [navbarOpen, setNavbarOpen] = useState(false);
   

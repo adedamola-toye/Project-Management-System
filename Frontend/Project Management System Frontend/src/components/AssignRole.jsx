@@ -9,25 +9,29 @@ import '../pages/Page Styles/ProjectView.css'
 const AssignRole = ({ projectId }) => {
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.user);
+  console.log("Users from Redux state:", users)
   const { rolesLoading, rolesError } = useSelector((state) => state.projectRole);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState("member");
   const [filteredUsers, setFilteredUsers] = useState([]);
-
   useEffect(() => {
-    // Filter users based on search query
-    if (searchQuery.length > 0) {
+    dispatch(getAllUsers());
+  }, [dispatch]);
+  
+  useEffect(() => {
+    if (searchQuery.trim().length > 0 && users.length > 0) {
       setFilteredUsers(
         users.filter((user) =>
-          user.username.toLowerCase().includes(searchQuery.toLowerCase())
+          user.username.toLowerCase().includes(searchQuery.trim().toLowerCase())
         )
       );
     } else {
       setFilteredUsers([]);
     }
   }, [searchQuery, users]);
+  
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);

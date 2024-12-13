@@ -172,6 +172,7 @@ const projectSlice = createSlice({
         state.error = null;
       })
       .addCase(updateProject.fulfilled, (state, action) => {
+        console.log("Update project payload:", action.payload);
         state.loading = false;
         const index = state.projects.findIndex((p) => p.id === action.payload.id);
         if (index !== -1) {

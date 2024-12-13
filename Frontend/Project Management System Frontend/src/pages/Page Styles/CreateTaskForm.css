@@ -1,0 +1,85 @@
+/* Main Form */
+
+h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #5a189a;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    margin-top: 3rem;
+  }
+
+.task-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-form-label {
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .task-form-input,
+  .task-form-textarea,
+  .task-form-select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .task-form-textarea {
+    height: 120px;
+    resize: vertical;
+  }
+  
+  .task-form-submit {
+    width: 100%;
+    padding: 1rem;
+    background-color: #5a189a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .task-form-submit:hover {
+    background-color: #deaaff;
+    transform: scale(1.05);
+    color: #5a189a;
+  }
+  
+  /* User Suggestions */
+  .user-suggestions {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  
+  .user-suggestion {
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .user-suggestion:hover {
+    background-color: #f2f2f2;
+  }
+  

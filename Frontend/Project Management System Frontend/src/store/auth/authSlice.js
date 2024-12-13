@@ -51,7 +51,7 @@ export const signupUser = createAsyncThunk(
 // Login async thunk
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue, dispatch}) => {
     try {
       const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
@@ -70,6 +70,8 @@ export const loginUser = createAsyncThunk(
           Authorization: `Bearer ${accessToken}`
         }
       });
+
+      console.log('User logged in:', userResponse.data.user);
 
       return {
         user: userResponse.data.user,
@@ -159,9 +161,11 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading.login = false;
         state.user = action.payload.user;
+        console.log("User from payload:", action.payload.user);
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.error.login = null;
+
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading.login = false;

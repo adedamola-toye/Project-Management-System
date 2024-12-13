@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Navigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import './Page Styles/Dashoard.css';
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import "./Page Styles/Dashoard.css";
 
-import { openModal } from '../store/modal/modalSlice';
-import ProjectFormModal from './Modals/ProjectFormModal';
-import { getProjectById, getAllProjects } from '../store/project/projectSlice';
-import { getUserRoles } from '../store/projectRole/projectRoleSlice';
+import { openModal } from "../store/modal/modalSlice";
+import ProjectFormModal from "./Modals/ProjectFormModal";
+import { getProjectById, getAllProjects } from "../store/project/projectSlice";
+import { getUserRoles } from "../store/projectRole/projectRoleSlice";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -18,67 +19,114 @@ const Dashboard = () => {
   const [memberProjects, setMemberProjects] = useState([]);
   const [viewerProjects, setViewerProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [projects, setProjects] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredProjects, setFilteredProjects] = useState([]);
+
+  const [projectsToShowAdmin, setProjectsToShowAdmin] = useState(5);
+  const [projectsToShowMember, setProjectsToShowMember] = useState(5);
+  const [projectsToShowViewer, setProjectsToShowViewer] = useState(5);
 
   useEffect(() => {
     const fetchProjectsData = async () => {
-      if (!user.id) {
-        console.log("User doesn't exist?");
-        return; // Exit early if there's no user ID
+      if (!user || !user.id) {
+        console.log("User doesn't exist or user ID is missing.");
+        return;
       }
+
       setLoading(true);
       try {
         // Fetch user roles
         const rolesResult = await dispatch(getUserRoles(user.id)).unwrap();
-        console.log('Roles:', rolesResult); // Debug roles data
+        console.log("Roles:", rolesResult);
 
-        const projectPromises = rolesResult.map(async ({ project_id, project, role }) => {
-          try {
-            // Parse project ID to an integer (if necessary)
-            const projectId = parseInt(project_id, 10);
+        const projectPromises = rolesResult.map(
+          async ({ project_id, project, role }) => {
+            try {
+              const projectId = parseInt(project_id, 10);
+              if (isNaN(projectId)) {
+                console.error(`Invalid project ID: ${project_id}`);
+                return null;
+              }
 
-            if (isNaN(projectId)) {
-              console.error(`Invalid project ID: ${project_id}`);
-              return null; // Skip invalid project IDs
+              const projectData = await dispatch(
+                getProjectById(projectId)
+              ).unwrap();
+              return { ...projectData, role };
+            } catch (error) {
+              console.error(
+                `Failed to fetch project with ID ${project_id}:`,
+                error
+              );
+              return null;
             }
-
-            // Fetch project data with the parsed project ID
-            const projectData = await dispatch(getProjectById(projectId)).unwrap();
-            return { ...projectData, role };
-          } catch (error) {
-            console.error(`Failed to fetch project with ID ${project_id}:`, error);
-            return null;
           }
-        });
+        );
 
-        // Resolve and filter project data
-        const projectsData = (await Promise.all(projectPromises)).filter(Boolean);
-        // Categorize projects based on role
-        const admin = projectsData.filter(project => project.role === 'Admin');
-        const member = projectsData.filter(project => project.role === 'Member');
-        const viewer = projectsData.filter(project => project.role === 'Viewer');
+        const projectsData = (await Promise.all(projectPromises)).filter(
+          Boolean
+        );
+
+        const admin = projectsData.filter(
+          (project) => project.role === "Admin"
+        );
+        const member = projectsData.filter(
+          (project) => project.role === "Member"
+        );
+        const viewer = projectsData.filter(
+          (project) => project.role === "Viewer"
+        );
 
         setAdminProjects(admin);
         setMemberProjects(member);
         setViewerProjects(viewer);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Error fetching projects:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProjectsData();
-  }, [dispatch, user.id, accessToken]);
+  }, [dispatch, user]);
 
-  // Redirect if not authenticated
+  useEffect(() => {
+    // Filter projects based on the search query
+    const allProjects = [
+      ...adminProjects,
+      ...memberProjects,
+      ...viewerProjects,
+    ];
+
+    if (searchQuery) {
+      const filtered = allProjects.filter((project) =>
+        project.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredProjects(filtered);
+    } else {
+      setFilteredProjects(allProjects);
+    }
+  }, [searchQuery, adminProjects, memberProjects, viewerProjects]);
+
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
   const openProjectFormModal = () => {
-    dispatch(openModal('project-form'));
-    console.log('Project form modal opened');
+    dispatch(openModal("project-form"));
+    console.log("Project form modal opened");
+  };
+
+  // Handle the "See More" button click for each category
+  const handleSeeMoreAdmin = () => {
+    setProjectsToShowAdmin((prev) => prev + 5); // Load 5 more admin projects
+  };
+
+  const handleSeeMoreMember = () => {
+    setProjectsToShowMember((prev) => prev + 5); // Load 5 more member projects
+  };
+
+  const handleSeeMoreViewer = () => {
+    setProjectsToShowViewer((prev) => prev + 5); // Load 5 more viewer projects
   };
 
   return (
@@ -93,16 +141,39 @@ const Dashboard = () => {
         <div className="dashboard-stats">
           <div className="stat-card">
             <h3>Active Projects</h3>
-            <p className="stat-number">{adminProjects.length + memberProjects.length}</p>
+            <p className="stat-number">
+              {adminProjects.length + memberProjects.length}
+            </p>
           </div>
           <div className="stat-card">
             <h3>Tasks Due Today</h3>
-            <p className="stat-number">0</p> {/* Replace with real data if available */}
+            <p className="stat-number">0</p>
           </div>
           <div className="stat-card">
             <h3>Team Members</h3>
-            <p className="stat-number">1</p> {/* Replace with real data if available */}
+            <p className="stat-number">1</p>
           </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="search-bar">
+          <input
+            type="text"
+            placeholder="Search for projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && filteredProjects.length > 0 && (
+            <ul className="search-suggestions">
+              {filteredProjects.slice(0, 5).map((project) => (
+                <li key={project.id}>
+                  <Link to={`/projects/${project.id}`}>
+                    <h3>{project.title}</h3>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Dashboard Content */}
@@ -115,16 +186,25 @@ const Dashboard = () => {
               <section className="project-section">
                 <h2>Projects You Manage (Admin)</h2>
                 {adminProjects.length ? (
-                  <ul>
-                    {adminProjects.map((project) => (
-                      <li key={project.id}>
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                      </li>
-                    ))}
+                  <ul className="adminProject-list">
+                    {adminProjects
+                      .slice(0, projectsToShowAdmin)
+                      .reverse()
+                      .map((project) => (
+                        <li key={project.id}>
+                          <Link to={`/projects/${project.id}`}>
+                            <h3>{project.title}</h3>
+                          </Link>
+                        </li>
+                      ))}
                   </ul>
                 ) : (
                   <p>No projects available for Admin.</p>
+                )}
+                {adminProjects.length > projectsToShowAdmin && (
+                  <button onClick={handleSeeMoreAdmin} className="see-more-btn">
+                    See More
+                  </button>
                 )}
               </section>
 
@@ -132,16 +212,28 @@ const Dashboard = () => {
               <section className="project-section">
                 <h2>Projects You Contribute To (Member)</h2>
                 {memberProjects.length ? (
-                  <ul>
-                    {memberProjects.map((project) => (
-                      <li key={project.id}>
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                      </li>
-                    ))}
+                  <ul className="memberProjects-list">
+                    {memberProjects
+                      .slice(0, projectsToShowMember)
+                      .reverse()
+                      .map((project) => (
+                        <li key={project.id}>
+                          <Link to={`/projects/${project.id}`}>
+                            <h3>{project.title}</h3>
+                          </Link>
+                        </li>
+                      ))}
                   </ul>
                 ) : (
                   <p>No projects available for Members.</p>
+                )}
+                {memberProjects.length > projectsToShowMember && (
+                  <button
+                    onClick={handleSeeMoreMember}
+                    className="see-more-btn"
+                  >
+                    See More
+                  </button>
                 )}
               </section>
 
@@ -149,38 +241,64 @@ const Dashboard = () => {
               <section className="project-section">
                 <h2>Projects You Can View (Viewer)</h2>
                 {viewerProjects.length ? (
-                  <ul>
-                    {viewerProjects.map((project) => (
-                      <li key={project.id}>
-                        <h3>{project.title}</h3>
-                        <p>{project.description}</p>
-                      </li>
-                    ))}
+                  <ul className="viewerProject-list">
+                    {viewerProjects
+                      .slice(0, projectsToShowViewer)
+                      .reverse()
+                      .map((project) => (
+                        <li key={project.id}>
+                          <Link to={`/projects/${project.id}`}>
+                            <h3>{project.title}</h3>
+                          </Link>
+                        </li>
+                      ))}
                   </ul>
                 ) : (
                   <p>No projects available for Viewers.</p>
                 )}
+                {viewerProjects.length > projectsToShowViewer && (
+                  <button
+                    onClick={handleSeeMoreViewer}
+                    className="see-more-btn"
+                  >
+                    See More
+                  </button>
+                )}
               </section>
 
+              {/* Recent Projects */}
               {/* Recent Projects */}
               <section className="recent-projects">
                 <h2>Recent Projects</h2>
                 <div className="project-list">
-                  {adminProjects.length || memberProjects.length || viewerProjects.length ? (
-                    <ul>
-                      {[...adminProjects.slice(0, 3), ...memberProjects.slice(0, 3), ...viewerProjects.slice(0, 3)].map(
-                        (project) => (
+                  {adminProjects.length ||
+                  memberProjects.length ||
+                  viewerProjects.length ? (
+                    <ul className="recentProjects-list">
+                      {/* Combine and reverse the order of the projects, then get the top 3 */}
+                      {[...adminProjects, ...memberProjects, ...viewerProjects]
+                        .reverse() // Reverse the combined projects array
+                        .slice(0, 3) // Get the top 3 most recent projects
+                        .map((project) => (
                           <li key={project.id}>
-                            <h3>{project.title}</h3>
+                            <Link to={`/projects/${project.id}`}>
+                              <h3>{project.title}</h3>
+                            </Link>
                           </li>
-                        )
-                      )}
+                        ))}
                     </ul>
                   ) : (
-                    <p>No projects yet. Click "Create Project" to get started!</p>
+                    <p>
+                      No projects yet. Click "Create Project" to get started!
+                    </p>
                   )}
                 </div>
-                <button className="create-project-btn" onClick={openProjectFormModal}>Create New Project</button>
+                <button
+                  className="create-project-btn"
+                  onClick={openProjectFormModal}
+                >
+                  Create New Project
+                </button>
               </section>
 
               {/* Quick Actions */}

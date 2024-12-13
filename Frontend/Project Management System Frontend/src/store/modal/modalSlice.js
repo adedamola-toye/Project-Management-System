@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // Initial state
 const initialState = {
   isOpen: false,
-  modalType: null,  // This will hold the type of modal (e.g., '', 'login', etc.)
+  modalType: "",  // This will hold the type of modal (e.g., '', 'login', etc.)
 };
 
 // Create slice
