@@ -30,11 +30,23 @@ app.use(express.json());
 
 //Use the cors library to allow server to handle requests from different websites
 app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173', // Local frontend
+  'https://proflow-frontend.onrender.com', // Deployed frontend
+];
+
 app.use(cors({
-  origin: 'http://localhost:5173',  // Only allow requests from your frontend
-  methods: ['GET', 'POST', 'DELETE', 'PUT'],  // Allow only GET and POST methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
-  credentials: true,  // If you are using cookies or other credentials
+  origin: (origin, callback) => {
+    //Allow requests with no origin
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'DELETE', 'PUT'], 
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  credentials: true, 
 }));
 
 
