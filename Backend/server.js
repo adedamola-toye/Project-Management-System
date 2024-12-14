@@ -36,17 +36,10 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    //Allow requests with no origin
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'DELETE', 'PUT'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  credentials: true, 
+  origin: ['http://localhost:5173', 'https://proflow-frontend.onrender.com'], // Only allow requests from your frontend
+  methods: ['GET', 'POST', 'DELETE', 'PUT'],  // Allow only GET and POST methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
+  credentials: true,  // If you are using cookies or other credentials
 }));
 
 
