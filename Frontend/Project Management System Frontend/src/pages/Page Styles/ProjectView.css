@@ -85,7 +85,6 @@ body {
   background-color: #f4f4f4;
 }
 
-/* Responsive styles */
 @media (max-width: 1024px) {
   .roles-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -192,7 +191,7 @@ body {
   border-color: #5a189a;
 }
 
-/* Assign Role Button */
+
 .assign-role button {
   margin-top: 1rem;
   width: 100%;
@@ -217,38 +216,161 @@ body {
   transform: translateY(0);
 }
 
+.delete-btn{
+  background-color: rgb(223, 52, 52);
+}
 
-.back-to-dashboard-btn, .update-project-btn, .delete-btn {
+.back-to-dashboard-btn, .update-project-btn, .add-task-btn{
+  background-color: #5a189a;
+}
+.back-to-dashboard-btn, .update-project-btn, .delete-btn, .add-task-btn {
   margin-top: 1rem;
   margin-right: 2rem;
   padding: 0.75rem 1.5rem;
-  background-color: #5a189a;
   color: white;
   font-size: 1rem;
   font-weight: bold;
   border: none;
-  border-radius: 12px; /* Slightly larger border-radius for a more modern look */
+  border-radius: 12px; 
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
-.back-to-dashboard-btn:hover, update-project-btn:hover, .delete-btn:hover {
+.back-to-dashboard-btn:hover, update-project-btn:hover, .delete-btn:hover, .add-task-btn {
   background-color: #4c1580;
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }
 
-.back-to-dashboard-btn:active, .update-project-btn:active, .delete-btn::active {
+.delete-btn:hover{
+  background-color: rgb(149, 9, 9);
+}
+
+.back-to-dashboard-btn:active, .update-project-btn:active, .delete-btn::active, .add-task-btn {
   background-color: #3b1266;
   transform: translateY(0) scale(1);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
-.back-to-dashboard-btn:focus, .update-project-btn:focus, .delete-btn:focus {
+.back-to-dashboard-btn:focus, .update-project-btn:focus, .delete-btn:focus, .add-task-btn {
   outline: none; 
   box-shadow: 0 0 0 3px rgba(90, 24, 154, 0.5); 
 }
 
+.add-task-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  margin-left: 2rem; 
+  margin-bottom: 2rem;
+}
 
 
+
+
+
+.task-section {
+  margin-top: 3rem;
+}
+
+.kanban-board {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.kanban-column {
+  width: 30%;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-column h3 {
+  font-size: 1.5rem;
+  color: #5a189a;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+
+.kanban-column ul {
+  list-style: none; 
+  padding: 0;
+  margin: 0;
+}
+
+.kanban-task {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  transition: box-shadow 0.3s;
+}
+
+.kanban-task:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kanban-task h4 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.kanban-task p {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+
+.kanban-task .task-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.edit-task-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #5a189a;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.edit-task-btn:hover {
+  background-color: #8e2de2;
+}
+
+.task-delete-btn {
+  background-color: rgb(223, 52, 52); 
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.task-delete-btn:hover {
+  background-color: rgb(149, 9, 9);
+}
+
+
+@media (max-width: 1024px) {
+  .kanban-column {
+    width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .kanban-column {
+    width: 100%;
+  }
+}

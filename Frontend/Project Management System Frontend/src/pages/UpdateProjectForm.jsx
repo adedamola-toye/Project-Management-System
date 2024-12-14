@@ -50,12 +50,12 @@ const UpdateProjectPage = () => {
       <h3>Update Project</h3>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <label htmlFor="title">Project Title:</label> {/* Updated label */}
+          <label htmlFor="title">Project Title:</label> 
           <input
             type="text"
             id="title"
             name="title" // Updated name
-            value={updatedProject.title} // Updated value
+            value={updatedProject.title} 
             onChange={handleChange}
           />
         </div>

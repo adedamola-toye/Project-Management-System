@@ -193,7 +193,7 @@ export const updateTask = createAsyncThunk(
         `${API_URL}/api/project-roles/projects/${projectId}/tasks/${taskId}`,
         task,
         {
-          headers: {
+          headers: {   
             Authorization: `Bearer ${accessToken}`,
           },
         }
@@ -224,7 +224,7 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
-// Slice
+
 const projectRoleSlice = createSlice({
   name: "projectRole",
   initialState,
@@ -235,9 +235,9 @@ const projectRoleSlice = createSlice({
       const roleAssignments = action.payload?.roleAssignment;
     
       if (Array.isArray(roleAssignments)) {
-        // Ensure the roleAssignments is an array
+
         roleAssignments.forEach(({ user_id, project_id, role }) => {
-          // Add the role to the state
+  
           state.roles.push({
             userId: user_id,
             projectId: project_id,
@@ -246,9 +246,9 @@ const projectRoleSlice = createSlice({
         });
         console.log("Updated roles in state:", state.roles);
       } else {
-        // Handle error if roleAssignment is not an array
+
         console.error("Expected roleAssignment to be an array, but got:", roleAssignments);
-        // Optionally, handle this error in the UI by updating state.error
+        
         state.error = "Invalid role assignment format";
       }
     })

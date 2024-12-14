@@ -1,6 +1,6 @@
 
 import Navbar from "../components/Navbar";
-import SignUpModal from "./Modals/SignUpModal"; // Import the SignUpModal component
+import SignUpModal from "./Modals/SignUpModal"; 
 import LoginModal from "./Modals/LogInModal";
 import "./Page Styles/LandingPage.css";
 import { useDispatch } from "react-redux";
@@ -22,7 +22,7 @@ const LandingPage = () => {
           <p>Your ultimate project management solution</p>
         </header>
 
-        {/* Features Section */}
+
         <section className="features">
           <p>
             Streamline your projects with ProFlow—a powerful, intuitive system
@@ -32,12 +32,12 @@ const LandingPage = () => {
           </p>
         </section>
 
-        {/* Call-to-Action Section */}
+
         <section className="cta">
           <p>
             Ready to take your projects to the next level? Join ProFlow now!
           </p>
-          {/* Open the modal on button click */}
+  
           <button onClick={openModalHandler}>Get Started</button>
         </section>
       </div>
