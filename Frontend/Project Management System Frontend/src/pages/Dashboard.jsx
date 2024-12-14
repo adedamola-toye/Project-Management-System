@@ -275,10 +275,10 @@ const Dashboard = () => {
                   memberProjects.length ||
                   viewerProjects.length ? (
                     <ul className="recentProjects-list">
-                      {/* Combine and reverse the order of the projects, then get the top 3 */}
+                     
                       {[...adminProjects, ...memberProjects, ...viewerProjects]
-                        .reverse() // Reverse the combined projects array
-                        .slice(0, 3) // Get the top 3 most recent projects
+                        .reverse()
+                        .slice(0, 3)
                         .map((project) => (
                           <li key={project.id}>
                             <Link to={`/projects/${project.id}`}>

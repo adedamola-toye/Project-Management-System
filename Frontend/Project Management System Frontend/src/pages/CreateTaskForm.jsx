@@ -4,13 +4,17 @@ import { createTask } from "../store/projectRole/projectRoleSlice";
 import { getAllUsers } from "../store/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import "./Page Styles/CreateTaskForm.css";
+import { useParams } from "react-router-dom";
 
 const CreateTaskForm = () => {
+  const { projectId } = useParams();
+  console.log("Project ID:", projectId);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { users } = useSelector((state) => state.user); // Get users from Redux store
-  const projectId = useSelector((state) => state.project.projectId); // Get projectId from Redux store
+  const { users } = useSelector((state) => state.user); 
+ const project = useSelector((state) => state.project.currentProject);
+ const tasks = useSelector((state) => state.projectRole.tasks);
 
   const [taskData, setTaskData] = useState({
     title: "",
@@ -57,20 +61,26 @@ const CreateTaskForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!projectId) {
+      console.error("Project ID is missing");
+      return;
+    }
 
     const taskPayload = {
       ...taskData,
-      projectId, // Pass the project ID from Redux
+      projectId, 
     };
-
+    console.log("Task Payload:", taskPayload); 
     // Dispatch createTask action
-    dispatch(createTask({ projectId, task: taskPayload }))
-      .then(() => {
-        navigate(`/projects/${projectId}`);
-      })
-      .catch((error) => {
+    try{
+      dispatch(createTask({projectId, task: taskPayload })).unwrap()
+      navigate(`/projects/${projectId}`);
+    }
+    
+      
+      catch(error){
         console.error("Failed to create task:", error);
-      });
+      };
   };
 
   return (
@@ -102,7 +112,7 @@ const CreateTaskForm = () => {
           <input
             type="text"
             placeholder="Search for a user"
-            value={searchQuery}
+            value={selectedUser ? selectedUser.username : searchQuery}
             onChange={handleSearchChange}
             className="task-form-input"
           />

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProjectById } from "../store/project/projectSlice";
 import { getRolesForProject } from "../store/projectRole/projectRoleSlice";
 import { getUserById } from "../store/user/userSlice";
-import { getTasksForProject } from "../store/task/taskSlice";  // Assuming this action exists
+import { getTasksForProject } from "../store/projectRole/projectRoleSlice";
 import Navbar from "../components/Navbar";
 import AssignRole from "../components/AssignRole";
 import { openModal } from "../store/modal/modalSlice"; // Import openModal action
@@ -23,11 +23,44 @@ const ProjectView = () => {
   // Redux roles data
   const roles = useSelector((state) => state.projectRole.roles);
   const project = useSelector((state) => state.project.currentProject);
-  const tasks = useSelector((state) => state.task.tasks);  // Tasks from Redux
+  const tasks = useSelector((state) => state.projectRole.tasks);
+  const [tasksWithAssignees, setTasksWithAssignees] = useState([]);
   const [projectDetails, setProjectDetails] = useState(null);
   const [creatorUsername, setCreatorUsername] = useState(null);
   const [updatedByUsername, setUpdatedByUsername] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAssignee = async (assigneeIdOrUsername) => {
+      if (!assigneeIdOrUsername) return "Not Assigned";
+
+      if (typeof assigneeIdOrUsername === "string") {
+        // If assignee is a username, just return the username
+        return assigneeIdOrUsername;
+      } else {
+        // If assignee is an id, fetch the user by id
+        try {
+          const user = await dispatch(getUserById(assigneeIdOrUsername)).unwrap();
+          return user?.username || "Not Assigned";
+        } catch (error) {
+          console.error("Error fetching user by ID:", error);
+          return "Not Assigned";
+        }
+      }
+    };
+
+    const fetchTasksWithAssignees = async () => {
+      const tasksWithAssignees = await Promise.all(
+        tasks.map(async (task) => {
+          const assigneeUsername = await fetchAssignee(task.assignee);
+          return { ...task, assignee: assigneeUsername };
+        })
+      );
+      setTasksWithAssignees(tasksWithAssignees);
+    };
+
+    fetchTasksWithAssignees();
+  }, [tasks, dispatch]);
 
   useEffect(() => {
     const fetchProjectData = async () => {
@@ -47,21 +80,17 @@ const ProjectView = () => {
         dispatch(getRolesForProject(projectId));
 
         // Fetch tasks for the project
-        dispatch(getTasksForProject(projectId));  // Dispatch to fetch tasks
+        dispatch(getTasksForProject(projectId));
 
         // Fetch creator username
         if (project.created_by) {
-          const creator = await dispatch(
-            getUserById(project.created_by)
-          ).unwrap();
+          const creator = await dispatch(getUserById(project.created_by)).unwrap();
           setCreatorUsername(creator?.username || "Unknown");
         }
 
         // Fetch updated_by username
         if (project.updated_by) {
-          const updater = await dispatch(
-            getUserById(project.updated_by)
-          ).unwrap();
+          const updater = await dispatch(getUserById(project.updated_by)).unwrap();
           setUpdatedByUsername(updater?.username || "Unknown");
         }
       } catch (error) {
@@ -192,15 +221,15 @@ const ProjectView = () => {
         {/* Task List Section */}
         <section className="task-list-section">
           <h3>Tasks</h3>
-          {tasks && tasks.length > 0 ? (
+          {tasksWithAssignees && tasksWithAssignees.length > 0 ? (
             <ul className="task-list">
-              {tasks.map((task) => (
+              {tasksWithAssignees.map((task) => (
                 <li key={task.id} className="task-item">
                   <h4>{task.title}</h4>
                   <p>{task.description}</p>
                   <p><strong>Status:</strong> {task.status}</p>
                   <p><strong>Due Date:</strong> {new Date(task.due_date).toLocaleDateString()}</p>
-                  <p><strong>Assignee:</strong> {task.assignee?.username || "Not Assigned"}</p>
+                  <p><strong>Assignee:</strong> {task.assignee || "Not Assigned"}</p>
                 </li>
               ))}
             </ul>

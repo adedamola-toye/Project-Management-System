@@ -10,12 +10,7 @@ const express = require("express");
 
 //import  CORS library - allows server to accepts requests from different  websites(like the React app)
 const cors = require("cors");
-app.use(cors({
-  origin: 'http://localhost:5173',  // Only allow requests from your frontend
-  methods: ['GET', 'POST', 'DELETE', 'PUT'],  // Allow only GET and POST methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
-  credentials: true,  // If you are using cookies or other credentials
-}));
+
 
 //import morgan to print out requests coming into our server
 const morgan = require("morgan");
@@ -35,6 +30,12 @@ app.use(express.json());
 
 //Use the cors library to allow server to handle requests from different websites
 app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',  // Only allow requests from your frontend
+  methods: ['GET', 'POST', 'DELETE', 'PUT'],  // Allow only GET and POST methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
+  credentials: true,  // If you are using cookies or other credentials
+}));
 
 
 

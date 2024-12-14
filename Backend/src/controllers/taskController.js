@@ -12,12 +12,12 @@ exports.createTask = async (req, res) => {
     description,
     assignee,
     due_date,
-    priority = "Medium", // Default to 'Medium' if priority is not provided
-    status = "To Do", // Default to 'To Do' if status is not provided
+    priority = "Medium", 
+    status = "To Do", 
   } = req.body;
 
   console.log("Due Date:", due_date);
-  console.log("Task ID:", taskId);
+
 
   const created_by = req.user ? req.user.id : null;
   console.log(created_by);
@@ -83,6 +83,7 @@ exports.createTask = async (req, res) => {
         null,
       ]
     );
+    console.log(newTask)
     res.json(newTask.rows[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });

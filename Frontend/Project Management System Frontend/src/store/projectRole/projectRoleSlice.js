@@ -149,6 +149,7 @@ export const getTasksForProject = createAsyncThunk(
           Authorization: `Bearer ${accessToken}`,
         },
       });
+      console.log("Fetched tasks:", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAxiosError(error));
@@ -172,8 +173,10 @@ export const createTask = createAsyncThunk(
           },
         }
       );
+      console.log("Task created:", response.data);
       return response.data;
     } catch (error) {
+      console.error('Create task error:', error);
       return rejectWithValue(handleAxiosError(error));
     }
   }
