@@ -28,7 +28,7 @@ module.exports.signup = async (req, res) => {
       [username, email, hashedPassword, new Date(), new Date(), username]
     );
 
-    // Generate initial tokens for automatic login after signup
+    
     const accessToken = jwt.sign(
       { userId: newUser.rows[0].id, username: newUser.rows[0].username },
       process.env.JWT_SECRET_KEY,
@@ -69,7 +69,7 @@ module.exports.login = async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Compare the password with the stored hashed password
+
     const isAMatch = await bcrypt.compare(password, user.rows[0].password_hash);
     if (!isAMatch) {
       return res.status(400).json({ error: "Invalid credentials" });

@@ -46,6 +46,7 @@ const ProjectView = () => {
     };
 
     const fetchTasksWithAssignees = async () => {
+      if(!tasks) return;
       const tasksWithAssignees = await Promise.all(
         tasks.map(async (task) => {
           const assigneeUsername = await fetchAssignee(task.assignee);
@@ -185,6 +186,44 @@ const ProjectView = () => {
             {new Date(projectDetails.updated_at).toLocaleString()}
           </p>
         )}
+
+       {/* Roles Section */}
+<section className="roles-section">
+  <h3>Roles</h3>
+  <div className="roles-grid">
+    <div>
+      <h4>Admins</h4>
+      <ul>
+        {groupedRoles.admins.map((role) => (
+          <li key={role.user_id || `${role.username}-${role.role}`}>
+            {role.username}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h4>Members</h4>
+      <ul>
+        {groupedRoles.members.map((role) => (
+          <li key={role.user_id || `${role.username}-${role.role}`}>
+            {role.username}
+          </li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h4>Viewers</h4>
+      <ul>
+        {groupedRoles.viewers.map((role) => (
+          <li key={role.user_id || `${role.username}-${role.role}`}>
+            {role.username}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
 
         {isAdmin && <AssignRole projectId={projectId} />}
 
