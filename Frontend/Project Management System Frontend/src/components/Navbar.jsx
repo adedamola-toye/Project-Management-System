@@ -4,12 +4,13 @@ import { FaBars, FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { openModal } from "../store/modal/modalSlice"
 import { logout } from "../store/auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  console.log("Navbar is rendering")
   const dispatch = useDispatch();
   const [navbarOpen, setNavbarOpen] = useState(false);
-  
+  const navigate = useNavigate();
+
   // Get auth state from Redux
   const { user, accessToken } = useSelector((state) => state.auth);
   const isAuthenticated = !!accessToken && !!user;
@@ -29,13 +30,17 @@ const Navbar = () => {
 
   const openLoginModal = () => {
     dispatch(openModal('login'));
-    console.log("Login modal opened");
     closeMenu();
   };
 
   const handleLogout = () => {
     dispatch(logout());
     closeMenu();
+    navigate('/'); // Redirect to Home after logout
+  };
+
+  const handleDashboardClick = () => {
+    navigate('/dashboard');
   };
 
   return (
@@ -51,14 +56,16 @@ const Navbar = () => {
         )}
       </div>
       <ul className={`nav-links ${navbarOpen ? "open" : ""}`}>
-        <li onClick={closeMenu}>Home</li>
         {isAuthenticated ? (
+          // Show these links when the user is logged in
           <>
-            <li>Dashboard</li>
+            <li onClick={handleDashboardClick}>Dashboard</li>
             <li onClick={handleLogout}>Log Out</li>
           </>
         ) : (
+          // Show these links when the user is not logged in
           <>
+            <li onClick={() => navigate('/')}>Home</li>
             <li onClick={openSignUpModal}>Sign Up</li>
             <li onClick={openLoginModal}>Log in</li>
           </>

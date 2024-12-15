@@ -7,6 +7,7 @@ import UpdateProjectPage from '../pages/UpdateProjectForm';
 import CreateTask from '../pages/CreateTaskForm';
 import EditTask from '../pages/EditTaskForm';
 
+
 const AppRouter = () => {
   const location = useLocation();
   const navigate = useNavigate();
