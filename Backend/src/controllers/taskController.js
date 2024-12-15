@@ -235,3 +235,20 @@ exports.getTasksForProject = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.countTasksForUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(
+      "SELECT COUNT(*) FROM tasks WHERE assignee = $1",
+      [userId]
+    );
+
+    const count = result.rows[0].count;
+    res.json({ userId, taskCount: parseInt(count, 10) });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "An error occurred while counting tasks." });
+  }
+};

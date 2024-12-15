@@ -1,10 +1,11 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Initial State
 const initialState = {
   roles: [],
   tasks: [],
+  completedTasks:[],
   isLoading: false,
   error: null,
 };
@@ -224,6 +225,19 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
+export const getTaskCountByUser = createAsyncThunk(
+  "projectRole/tasks/getTaskCountByUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/tasks/count/${userId}`);
+      return response.data.taskCount;
+    } catch (error) {
+      return rejectWithValue(handleAxiosError(error));
+    }
+  }
+);
+
+
 
 const projectRoleSlice = createSlice({
   name: "projectRole",
@@ -294,9 +308,12 @@ const projectRoleSlice = createSlice({
 
       // Get tasks
       .addCase(getTasksForProject.fulfilled, (state, action) => {
-        state.tasks = action.payload;
+        const { tasks, completedTasks } = action.payload;
+        state.tasks = tasks;
+        state.completedTasks = completedTasks;
         state.isLoading = false;
       })
+      
 
       // Create task
       .addCase(createTask.fulfilled, (state, action) => {
@@ -315,8 +332,25 @@ const projectRoleSlice = createSlice({
       // Delete task
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      })
+  
+      .addCase(getTasksForProject.pending, (state) => {
+        state.isLoading = true;
+      })
+      
+      .addCase(getTasksForProject.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
+
+export const selectTaskCountByAssignee = createSelector(
+  [(state) => state.projectRole.tasks, (_, userId) => userId],
+  (tasks, userId) => tasks.filter(task => task.assignee === userId).length
+);
+
+export const selectCompletedTasks = (state) => state.projectRole.completedTasks;
+
 
 export default projectRoleSlice.reducer;

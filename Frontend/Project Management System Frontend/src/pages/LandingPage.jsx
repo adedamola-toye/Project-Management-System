@@ -5,14 +5,26 @@ import LoginModal from "./Modals/LogInModal";
 import "./Page Styles/LandingPage.css";
 import { useDispatch } from "react-redux";
 import { openModal } from "../store/modal/modalSlice";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
+  const { accessToken, user } = useSelector((state) => state.auth);
+  const isAuthenticated = !!accessToken && !!user;
+  const navigate = useNavigate();
 
   const openModalHandler = () => {
     dispatch(openModal('signup'))
   }
   
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate])
+
   return (
     <div className="container">
       <Navbar />

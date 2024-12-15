@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./Page Styles/Dashoard.css";
@@ -9,11 +9,13 @@ import { openModal } from "../store/modal/modalSlice";
 import ProjectFormModal from "./Modals/ProjectFormModal";
 import { getProjectById, getAllProjects } from "../store/project/projectSlice";
 import { getUserRoles } from "../store/projectRole/projectRoleSlice";
+import { selectTaskCountByAssignee } from "../store/projectRole/projectRoleSlice";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { user, accessToken } = useSelector((state) => state.auth);
   const isAuthenticated = !!accessToken && !!user;
+  const navigate = useNavigate();
 
   const [adminProjects, setAdminProjects] = useState([]);
   const [memberProjects, setMemberProjects] = useState([]);
@@ -21,11 +23,17 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProjects, setFilteredProjects] = useState([]);
+  //const [taskCount, setTaskCount] = useState(0)
 
   const [projectsToShowAdmin, setProjectsToShowAdmin] = useState(5);
   const [projectsToShowMember, setProjectsToShowMember] = useState(5);
   const [projectsToShowViewer, setProjectsToShowViewer] = useState(5);
-
+ const taskCount = useSelector((state) => selectTaskCountByAssignee(state, user?.id))
+  //const completedTasks = useSelector((state) => state.tasks.completedTasks);
+  const completedTasks = useSelector((state) =>
+    state.projectRole.tasks.filter((task) => task.assignee === user.id && task.status === "completed")
+  );
+  
   useEffect(() => {
     const fetchProjectsData = async () => {
       if (!user || !user.id) {
@@ -146,12 +154,12 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="stat-card">
-            <h3>Tasks Due Today</h3>
-            <p className="stat-number">0</p>
+            <h3>Tasks Assigned to You</h3>
+            <p className="stat-number">{taskCount||0}</p>
           </div>
           <div className="stat-card">
-            <h3>Team Members</h3>
-            <p className="stat-number">1</p>
+            <h3>Completed Tasks</h3>
+            <p className="stat-number">{completedTasks.length}</p>
           </div>
         </div>
 
@@ -302,14 +310,13 @@ const Dashboard = () => {
               </section>
 
               {/* Quick Actions */}
-              <section className="quick-actions">
+              {/* <section className="quick-actions">
                 <h2>Quick Actions</h2>
                 <div className="action-buttons">
-                  <button>Create Task</button>
                   <button>Schedule Meeting</button>
                   <button>View Calendar</button>
                 </div>
-              </section>
+              </section> */}
             </>
           )}
         </div>

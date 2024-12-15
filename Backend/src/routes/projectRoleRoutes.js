@@ -82,4 +82,11 @@ router.delete(
   taskController.deleteTask
 );
 
+router.get(
+  "/tasks/count/:userId",
+  authMiddleware.protect,
+  projectRoleAuth(["Admin", "Member", "Viewer"]),
+  taskController.countTasksForUser
+);
+
 module.exports = router;
