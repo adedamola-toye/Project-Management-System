@@ -21,7 +21,6 @@ const initialState = {
   }
 };
 
-
 export const validateStoredTokens = async () => {
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
@@ -29,22 +28,41 @@ export const validateStoredTokens = async () => {
 
   if (!accessToken || !refreshToken || !user) {
     localStorage.clear();
-    return null; // Tokens or user data are incomplete
+    return null;
   }
 
   try {
-    // Make a lightweight request to validate the token
-    const response = await axios.get(`${API_URL}/api/auth/validate-token`, {
+    // Check if the access token is expired
+    const { data: { expired } } = await axios.get(`${API_URL}/api/auth/check-token-expiry`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     });
-    return JSON.parse(user); // Return user if token is valid
-  } catch {
+
+    if (expired) {
+      // If access token is expired, attempt to refresh using the refresh token
+      const { data: { accessToken: newAccessToken } } = await axios.post(`${API_URL}/api/auth/refresh-token`, {
+        refreshToken
+      });
+
+      if (newAccessToken) {
+        // Update local storage with the new access token
+        localStorage.setItem('accessToken', newAccessToken);
+        return JSON.parse(user);
+      } else {
+        localStorage.clear();
+        return null;
+      }
+    }
+
+    return JSON.parse(user);
+  } catch (error) {
+    console.error("Token validation failed:", error);
     localStorage.clear();
-    return null; // Invalid token, clear localStorage
+    return null;
   }
 };
+
 
 
 // Signup async thunk

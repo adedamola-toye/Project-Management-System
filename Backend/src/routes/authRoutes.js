@@ -2,7 +2,8 @@ const express = require('express');
 const {
   signup,
   login,
-  refreshToken
+  refreshToken,
+  checkTokenExpiry
 } = require("../controllers/authController");
 
 const authMiddleware = require('../middleware/authMiddleware');
@@ -24,5 +25,7 @@ router.get('/profile', authMiddleware.protect, (req, res) => {
 
 // Refresh access token
 router.post('/refresh-token', refreshToken);
+
+router.get('/check-token-expiry', checkTokenExpiry);
 
 module.exports = router;

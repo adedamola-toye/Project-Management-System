@@ -127,3 +127,26 @@ module.exports.refreshToken = async (req, res) => {
     res.status(400).json({ error: "Invalid or expired refresh token" });
   }
 };
+
+module.exports.checkTokenExpiry = async(req, res) => {
+  const accessToken = req.headers.authorization?.split(' ')[1];
+
+    if (!accessToken) {
+      return res.status(400).json({ error: "Access token is required" });
+    }
+
+    try {
+      // Verify the access token
+      jwt.verify(accessToken, process.env.JWT_SECRET_KEY, (err, decoded) => {
+        if (err) {
+          return res.status(400).json({ error: "Token is expired or invalid" });
+        }
+
+        // If token is valid, send response
+        res.json({ expired: false });
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+    }
+}
