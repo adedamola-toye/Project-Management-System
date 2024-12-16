@@ -7,8 +7,8 @@ const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000"
 // Initial State
 const initialState = {
   user: null,
-  accessToken: localStorage.getItem('accessToken'),
-  refreshToken: localStorage.getItem('refreshToken'),
+  accessToken: null,
+  refreshToken: null,
   loading: {
     login: false,
     signup: false,
@@ -20,6 +20,32 @@ const initialState = {
     refresh: null
   }
 };
+
+
+export const validateStoredTokens = async () => {
+  const accessToken = localStorage.getItem('accessToken');
+  const refreshToken = localStorage.getItem('refreshToken');
+  const user = localStorage.getItem('user');
+
+  if (!accessToken || !refreshToken || !user) {
+    localStorage.clear();
+    return null; // Tokens or user data are incomplete
+  }
+
+  try {
+    // Make a lightweight request to validate the token
+    const response = await axios.get(`${API_URL}/api/auth/validate-token`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    return JSON.parse(user); // Return user if token is valid
+  } catch {
+    localStorage.clear();
+    return null; // Invalid token, clear localStorage
+  }
+};
+
 
 // Signup async thunk
 export const signupUser = createAsyncThunk(
@@ -53,10 +79,12 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ email, password }, { rejectWithValue, dispatch}) => {
     try {
+      console.log("Attempting to login...");
       const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
         password
       });
+      console.log("Login successful:", response.data);
 
       const { accessToken, refreshToken } = response.data;
       

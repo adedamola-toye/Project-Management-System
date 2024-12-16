@@ -35,9 +35,12 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    closeMenu();
-    navigate('/'); // Redirect to Home after logout
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    navigate('/');
   };
+  
 
   const handleDashboardClick = () => {
     navigate('/dashboard');

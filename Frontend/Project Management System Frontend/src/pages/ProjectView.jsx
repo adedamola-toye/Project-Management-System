@@ -31,6 +31,7 @@ const ProjectView = () => {
   const [updatedByUsername, setUpdatedByUsername] = useState(null);
   const [loading, setLoading] = useState(true);
 
+ 
 
   useEffect(() => {
     const fetchAssignee = async (assigneeIdOrUsername) => {
@@ -54,6 +55,7 @@ const ProjectView = () => {
         })
       );
       setTasksWithAssignees(tasksWithAssignees);
+      console.log(tasksWithAssignees)
     };
 
     fetchTasksWithAssignees();
@@ -155,6 +157,7 @@ const ProjectView = () => {
     acc[status] = tasksWithAssignees.filter((task) => task.status === status);
     return acc;
   }, {});
+  console.log(tasksByStatus)
 
   return (
     <div>
@@ -265,6 +268,8 @@ const ProjectView = () => {
               </div>
             ))}
           </section>
+        
+
         </div>
 
         <button

@@ -1,23 +1,33 @@
-import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createSelector,
+} from "@reduxjs/toolkit";
 import axios from "axios";
 
 // Initial State
 const initialState = {
   roles: [],
   tasks: [],
-  completedTasks:[],
+  completedTasks: [],
   isLoading: false,
   error: null,
+  tasksByStatus: {
+    "To Do": [],
+    "In Progress": [],
+    Completed: [],
+  },
 };
 
 // Define API URL using Vite's import.meta.env
-const API_URL = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
+const API_URL =
+  import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:3000";
 const getAccessToken = (state) => state.auth.accessToken;
 
 // Utility function to handle Axios errors
 const handleAxiosError = (error) =>
   axios.isAxiosError(error)
-    ? (error.response?.data) || "An Axios error occurred"
+    ? error.response?.data || "An Axios error occurred"
     : "An unexpected error occurred";
 
 // Async Thunks
@@ -28,7 +38,8 @@ export const assignRole = createAsyncThunk(
     const accessToken = getAccessToken(state);
 
     // Ensure the role matches the expected format ('Viewer', 'Editor', etc.)
-    const formattedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    const formattedRole =
+      role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
     console.log("Assigning role:", { projectId, userId, role: formattedRole });
     console.log("Access token:", accessToken);
@@ -48,14 +59,16 @@ export const assignRole = createAsyncThunk(
       console.log("Response from backend:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error assigning role:", error?.response?.data || error.message);
-      return rejectWithValue(error.response?.data?.message || "Failed to assign role");
+      console.error(
+        "Error assigning role:",
+        error?.response?.data || error.message
+      );
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to assign role"
+      );
     }
   }
 );
-
-
-
 
 export const getRolesForProject = createAsyncThunk(
   "projectRole/getRolesForProject",
@@ -64,11 +77,14 @@ export const getRolesForProject = createAsyncThunk(
     const accessToken = getAccessToken(state);
 
     try {
-      const response = await axios.get(`${API_URL}/api/project-roles/projects/${projectId}/roles`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}/api/project-roles/projects/${projectId}/roles`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAxiosError(error));
@@ -84,11 +100,14 @@ export const getUserRoles = createAsyncThunk(
 
     try {
       console.log("Fetching roles for userId:", userId);
-      const response = await axios.get(`${API_URL}/api/project-roles/users/${userId}/roles`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}/api/project-roles/users/${userId}/roles`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(handleAxiosError(error));
@@ -126,11 +145,14 @@ export const removeRole = createAsyncThunk(
     const accessToken = getAccessToken(state);
 
     try {
-      await axios.delete(`${API_URL}/api/project-roles/projects/${projectId}/users/${userId}/role`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      await axios.delete(
+        `${API_URL}/api/project-roles/projects/${projectId}/users/${userId}/role`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       return userId;
     } catch (error) {
       return rejectWithValue(handleAxiosError(error));
@@ -145,14 +167,21 @@ export const getTasksForProject = createAsyncThunk(
     const accessToken = getAccessToken(state);
 
     try {
-      const response = await axios.get(`${API_URL}/api/project-roles/projects/${projectId}/tasks`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}/api/project-roles/projects/${projectId}/tasks`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       console.log("Fetched tasks:", response.data);
       return response.data;
     } catch (error) {
+      console.error(
+        "Error fetching tasks:",
+        error?.response?.data || error.message
+      );
       return rejectWithValue(handleAxiosError(error));
     }
   }
@@ -177,7 +206,7 @@ export const createTask = createAsyncThunk(
       console.log("Task created:", response.data);
       return response.data;
     } catch (error) {
-      console.error('Create task error:', error);
+      console.error("Create task error:", error);
       return rejectWithValue(handleAxiosError(error));
     }
   }
@@ -194,7 +223,7 @@ export const updateTask = createAsyncThunk(
         `${API_URL}/api/project-roles/projects/${projectId}/tasks/${taskId}`,
         task,
         {
-          headers: {   
+          headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         }
@@ -213,11 +242,14 @@ export const deleteTask = createAsyncThunk(
     const accessToken = getAccessToken(state);
 
     try {
-      await axios.delete(`${API_URL}/api/project-roles/projects/${projectId}/tasks/${taskId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      await axios.delete(
+        `${API_URL}/api/project-roles/projects/${projectId}/tasks/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       return taskId;
     } catch (error) {
       return rejectWithValue(handleAxiosError(error));
@@ -237,40 +269,37 @@ export const getTaskCountByUser = createAsyncThunk(
   }
 );
 
-
-
 const projectRoleSlice = createSlice({
   name: "projectRole",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-    .addCase(assignRole.fulfilled, (state, action) => {
-      const roleAssignments = action.payload?.roleAssignment;
-    
-      if (Array.isArray(roleAssignments)) {
+      .addCase(assignRole.fulfilled, (state, action) => {
+        const roleAssignments = action.payload?.roleAssignment;
 
-        roleAssignments.forEach(({ user_id, project_id, role }) => {
-  
-          state.roles.push({
-            userId: user_id,
-            projectId: project_id,
-            role,
+        if (Array.isArray(roleAssignments)) {
+          roleAssignments.forEach(({ user_id, project_id, role }) => {
+            state.roles.push({
+              userId: user_id,
+              projectId: project_id,
+              role,
+            });
           });
-        });
-        console.log("Updated roles in state:", state.roles);
-      } else {
+          console.log("Updated roles in state:", state.roles);
+        } else {
+          console.error(
+            "Expected roleAssignment to be an array, but got:",
+            roleAssignments
+          );
 
-        console.error("Expected roleAssignment to be an array, but got:", roleAssignments);
-        
-        state.error = "Invalid role assignment format";
-      }
-    })
-    
-    
-    .addCase(assignRole.rejected, (state, action) => {
-      state.error = action.payload; // Handle the error here
-    })
+          state.error = "Invalid role assignment format";
+        }
+      })
+
+      .addCase(assignRole.rejected, (state, action) => {
+        state.error = action.payload; // Handle the error here
+      })
       // Get roles
       .addCase(getRolesForProject.fulfilled, (state, action) => {
         state.roles = action.payload;
@@ -287,15 +316,19 @@ const projectRoleSlice = createSlice({
       // Get user roles
       .addCase(getUserRoles.fulfilled, (state, action) => {
         const userRoles = action.payload;
-        const uniqueProjects = [...new Set(userRoles.map(role => role.project))];
+        const uniqueProjects = [
+          ...new Set(userRoles.map((role) => role.project)),
+        ];
         state.projectsCount = uniqueProjects.length;
-        state.uniqueProjects=uniqueProjects;
+        state.uniqueProjects = uniqueProjects;
       })
 
       // Update role
       .addCase(updateRole.fulfilled, (state, action) => {
         const updatedRole = action.payload;
-        const index = state.roles.findIndex((role) => role.userId === updatedRole.userId);
+        const index = state.roles.findIndex(
+          (role) => role.userId === updatedRole.userId
+        );
         if (index >= 0) {
           state.roles[index] = updatedRole;
         }
@@ -303,17 +336,44 @@ const projectRoleSlice = createSlice({
 
       // Remove role
       .addCase(removeRole.fulfilled, (state, action) => {
-        state.roles = state.roles.filter((role) => role.userId !== action.payload);
+        state.roles = state.roles.filter(
+          (role) => role.userId !== action.payload
+        );
       })
 
       // Get tasks
       .addCase(getTasksForProject.fulfilled, (state, action) => {
-        const { tasks, completedTasks } = action.payload;
-        state.tasks = tasks;
-        state.completedTasks = completedTasks;
-        state.isLoading = false;
+        console.log("Action payload:", action.payload)
+        const tasks  = action.payload;
+        console.log("Hello from getTasksForProjectFulfilled");
+        console.log("Tasks from API:", tasks);
+
+        const taskList = Array.isArray(tasks) ? tasks : [];
+
+        const tasksByStatus = {
+          "To Do": [],
+          "In Progress": [],
+          "Completed": [],
+        };
+        console.log("Hello from middle of getTasksForProjectFulfilled");
+        taskList.forEach((task) => {
+          console.log("Task:", task); // This will log each task
+          console.log("Task Status:", task.status);
+          if (task.status === "To Do") {
+            tasksByStatus["To Do"].push(task);
+          } else if (task.status === "In Progress") {
+            tasksByStatus["In Progress"].push(task);
+          } else if (task.status === "Completed") {
+            tasksByStatus["Completed"].push(task);
+          } else {
+            console.error("Invalid task status:", task.status);
+          }
+        });
+
+        state.tasks = taskList;
+        state.tasksByStatus = tasksByStatus;
+        console.log("Tasks by status after update:", state.tasksByStatus);
       })
-      
 
       // Create task
       .addCase(createTask.fulfilled, (state, action) => {
@@ -323,7 +383,9 @@ const projectRoleSlice = createSlice({
       // Update task
       .addCase(updateTask.fulfilled, (state, action) => {
         const updatedTask = action.payload;
-        const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
+        const index = state.tasks.findIndex(
+          (task) => task.id === updatedTask.id
+        );
         if (index >= 0) {
           state.tasks[index] = updatedTask;
         }
@@ -333,11 +395,11 @@ const projectRoleSlice = createSlice({
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.tasks = state.tasks.filter((task) => task.id !== action.payload);
       })
-  
+
       .addCase(getTasksForProject.pending, (state) => {
         state.isLoading = true;
       })
-      
+
       .addCase(getTasksForProject.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
@@ -347,10 +409,9 @@ const projectRoleSlice = createSlice({
 
 export const selectTaskCountByAssignee = createSelector(
   [(state) => state.projectRole.tasks, (_, userId) => userId],
-  (tasks, userId) => tasks.filter(task => task.assignee === userId).length
+  (tasks, userId) => tasks.filter((task) => task.assignee === userId).length
 );
 
 export const selectCompletedTasks = (state) => state.projectRole.completedTasks;
-
 
 export default projectRoleSlice.reducer;

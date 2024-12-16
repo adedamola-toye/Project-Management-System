@@ -6,13 +6,28 @@ import LandingPage from '../pages/LandingPage';
 import UpdateProjectPage from '../pages/UpdateProjectForm';
 import CreateTask from '../pages/CreateTaskForm';
 import EditTask from '../pages/EditTaskForm';
+import {validateStoredTokens} from '../store/auth/authSlice'
+import { useDispatch } from 'react-redux';
+import { closeModal } from '../store/modal/modalSlice';
 
-
-const AppRouter = () => {
+const GeneralRouter = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const user = await validateStoredTokens();
+      if (user) {
+        dispatch({ type: 'auth/initialize', payload: user });
+      } else {
+        dispatch(closeModal()); // Close modals if user validation fails
+      }
+    };
+
+    initializeAuth();
+  }, [dispatch]); 
   useEffect(() => {
     localStorage.setItem("lastVisitedPath", location.pathname);
   }, [location]);
@@ -20,10 +35,15 @@ const AppRouter = () => {
 
   useEffect(() => {
     const savedPath = localStorage.getItem("lastVisitedPath");
-    if (savedPath && savedPath !== "/") {
+    const isAuthenticated = !!localStorage.getItem("accessToken");
+  
+    if (isAuthenticated && savedPath && savedPath !== "/") {
       navigate(savedPath);
+    } else {
+      localStorage.removeItem("lastVisitedPath");
     }
   }, [navigate]);
+  
 
   return (
     <Routes>
@@ -39,10 +59,5 @@ const AppRouter = () => {
   );
 };
 
-const AppRouterWithBrowser = () => (
-  <BrowserRouter>
-    <AppRouter />
-  </BrowserRouter>
-);
 
-export default AppRouterWithBrowser;
+export default GeneralRouter;

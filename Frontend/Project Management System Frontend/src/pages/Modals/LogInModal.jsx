@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { closeModal, openModal } from "../../store/modal/modalSlice";
 import { loginUser } from "../../store/auth/authSlice";
@@ -24,9 +24,17 @@ const LoginModal = () => {
     error: state.auth.error.login,
   }));
 
+  useEffect(() => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }, []);
+
   // Only render the modal if it is open and the modal type is 'login'
   if (!isOpen || modalType !== "login") return null;
 
+  
+   
   // Handle form input changes
   const handleInputChange = (e) => {
     setFormData({
@@ -38,6 +46,10 @@ const LoginModal = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    localStorage.removeItem('user');
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
 
     try {
       // Dispatch the loginUser thunk
